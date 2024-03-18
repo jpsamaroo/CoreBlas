@@ -172,18 +172,15 @@ int coreblas_zgeqrt(int m, int n, int ib,
 void coreblas_kernel_zgeqrt(int m, int n, int ib,
                      coreblas_complex64_t *A, int lda,
                      coreblas_complex64_t *T, int ldt,
-                     coreblas_workspace_t work)
+                     coreblas_complex64_t *work)
 {
 
-    // Prepare workspaces.
-    int tid = omp_get_thread_num();
-    coreblas_complex64_t *tau = ((coreblas_complex64_t*)work.spaces[tid]);
     // Call the kernel.
     int info = coreblas_zgeqrt(m, n, ib,
                            A, lda,
                            T, ldt,
-                           tau,
-                           tau+n);
+                           work,
+                           work+n);
     if (info != CoreBlasSuccess) {
         coreblas_error("core_zgeqrt() failed");
     }

@@ -240,19 +240,16 @@ void coreblas_kernel_zttlqt(int m, int n, int ib,
                      coreblas_complex64_t *A1, int lda1,
                      coreblas_complex64_t *A2, int lda2,
                      coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work)
+                     coreblas_complex64_t *work)
 {
 
-    // Prepare workspaces.
-    int tid = omp_get_thread_num();
-    coreblas_complex64_t *tau = ((coreblas_complex64_t*)work.spaces[tid]);
     // Call the kernel.
     int info = coreblas_zttlqt(m, n, ib,
                            A1, lda1,
                            A2, lda2,
                            T,  ldt,
-                           tau,
-                           tau+m);
+                           work,
+                           work+m);
     if (info != CoreBlasSuccess) {
         coreblas_error("core_ztslqt() failed");
     }

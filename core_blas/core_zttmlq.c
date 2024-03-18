@@ -262,13 +262,9 @@ void coreblas_kernel_zttmlq(coreblas_enum_t side, coreblas_enum_t trans,
                            coreblas_complex64_t *A2, int lda2,
                      const coreblas_complex64_t *V,  int ldv,
                      const coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work)
+                     coreblas_complex64_t *work, int ldwork)
 {
 
-    // Prepare workspaces.
-    int tid = omp_get_thread_num();
-    coreblas_complex64_t *W = (coreblas_complex64_t*)work.spaces[tid];
-    int ldwork = side == CoreBlasLeft ? ib : n1;  // TODO: double check
     // Call the kernel.
     int info = coreblas_zttmlq(side, trans,
                            m1, n1, m2, n2, k, ib,
@@ -276,7 +272,7 @@ void coreblas_kernel_zttmlq(coreblas_enum_t side, coreblas_enum_t trans,
                            A2, lda2,
                            V,  ldv,
                            T,  ldt,
-                           W,  ldwork);
+                           work,  ldwork);
     if (info != CoreBlasSuccess) {
         coreblas_error("core_zttmlq() failed");
     }

@@ -335,7 +335,7 @@ void coreblas_kernel_zgeadd(
 void coreblas_kernel_zgelqt(int m, int n, int ib,
                      coreblas_complex64_t *A, int lda,
                      coreblas_complex64_t *T, int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_zgemm(
     coreblas_enum_t transa, coreblas_enum_t transb,
@@ -347,7 +347,7 @@ void coreblas_kernel_zgemm(
 void coreblas_kernel_zgeqrt(int m, int n, int ib,
                      coreblas_complex64_t *A, int lda,
                      coreblas_complex64_t *T, int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_zgessq(int m, int n,
                      const coreblas_complex64_t *A, int lda,
@@ -528,7 +528,7 @@ void coreblas_kernel_ztslqt(int m, int n, int ib,
                      coreblas_complex64_t *A1, int lda1,
                      coreblas_complex64_t *A2, int lda2,
                      coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_ztsmlq(coreblas_enum_t side, coreblas_enum_t trans,
                      int m1, int n1, int m2, int n2, int k, int ib,
@@ -536,7 +536,7 @@ void coreblas_kernel_ztsmlq(coreblas_enum_t side, coreblas_enum_t trans,
                            coreblas_complex64_t *A2, int lda2,
                      const coreblas_complex64_t *V,  int ldv,
                      const coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work, int ldwork);
 
 void coreblas_kernel_ztsmqr(coreblas_enum_t side, coreblas_enum_t trans,
                      int m1, int n1, int m2, int n2, int k, int ib,
@@ -544,19 +544,19 @@ void coreblas_kernel_ztsmqr(coreblas_enum_t side, coreblas_enum_t trans,
                            coreblas_complex64_t *A2, int lda2,
                      const coreblas_complex64_t *V, int ldv,
                      const coreblas_complex64_t *T, int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work, int ldwork);
 
 void coreblas_kernel_ztsqrt(int m, int n, int ib,
                      coreblas_complex64_t *A1, int lda1,
                      coreblas_complex64_t *A2, int lda2,
                      coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_zttlqt(int m, int n, int ib,
                      coreblas_complex64_t *A1, int lda1,
                      coreblas_complex64_t *A2, int lda2,
                      coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_zttmlq(coreblas_enum_t side, coreblas_enum_t trans,
                      int m1, int n1, int m2, int n2, int k, int ib,
@@ -564,7 +564,7 @@ void coreblas_kernel_zttmlq(coreblas_enum_t side, coreblas_enum_t trans,
                            coreblas_complex64_t *A2, int lda2,
                      const coreblas_complex64_t *V,  int ldv,
                      const coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work, int ldwork);
 
 void coreblas_kernel_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
                      int m1, int n1, int m2, int n2, int k, int ib,
@@ -572,27 +572,27 @@ void coreblas_kernel_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
                            coreblas_complex64_t *A2, int lda2,
                      const coreblas_complex64_t *V, int ldv,
                      const coreblas_complex64_t *T, int ldt,
-                     coreblas_workspace_t work);
+                      coreblas_complex64_t *work, int ldwork);
 
 void coreblas_kernel_zttqrt(int m, int n, int ib,
                      coreblas_complex64_t *A1, int lda1,
                      coreblas_complex64_t *A2, int lda2,
                      coreblas_complex64_t *T,  int ldt,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work);
 
 void coreblas_kernel_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
                      int m, int n, int k, int ib,
                      const coreblas_complex64_t *A, int lda,
                      const coreblas_complex64_t *T, int ldt,
                            coreblas_complex64_t *C, int ldc,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work, int ldwork);
 
 void coreblas_kernel_zunmqr(coreblas_enum_t side, coreblas_enum_t trans,
                      int m, int n, int k, int ib,
                      const coreblas_complex64_t *A, int lda,
                      const coreblas_complex64_t *T, int ldt,
                            coreblas_complex64_t *C, int ldc,
-                     coreblas_workspace_t work);
+                     coreblas_complex64_t *work, int ldwork);
 
 #undef COMPLEX
 

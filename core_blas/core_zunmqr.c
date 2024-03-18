@@ -238,20 +238,16 @@ void coreblas_kernel_zunmqr(coreblas_enum_t side, coreblas_enum_t trans,
                      const coreblas_complex64_t *A, int lda,
                      const coreblas_complex64_t *T, int ldt,
                            coreblas_complex64_t *C, int ldc,
-                     coreblas_workspace_t work)
+                     coreblas_complex64_t *work, int ldwork)
 {
 
-    // Prepare workspaces.
-    int tid = omp_get_thread_num();
-    coreblas_complex64_t *W = (coreblas_complex64_t*)work.spaces[tid];
-    int ldwork = side == CoreBlasLeft ? n : m; // TODO: double check
     // Call the kernel.
     int info = coreblas_zunmqr(side, trans,
                            m, n, k, ib,
                            A, lda,
                            T, ldt,
                            C, ldc,
-                           W, ldwork);
+                           work, ldwork);
     if (info != CoreBlasSuccess) {
         coreblas_error("core_zunmqr() failed");
     }
