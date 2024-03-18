@@ -1,0 +1,60 @@
+# ChangeLog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+### Added
+- Add an attempt to generate missing precision files if Python present
+
+### Fixed
+- Fix variable pointing to OpenBLAS installation
+- Fix name of Python executable when launching code generation
+
+## [23.8.2] - 2023-08-02
+
+### Added
+- Add support for OpenBLAS and exported CMake configuration
+- Add COREBLAS prefix to remaining config macros
+
+### Removed
+- Remove old build system files using Python script for configuration in Makefile
+
+## [22.9.29] - 2022-09-29
+### Added
+- Add xGBMM() for band matrix multiply
+- Add xGESDD() for symmetric/Hermitian divide-and-conquer eigensolver
+- Add xSTEVX() for tridiagonal matrix eigensolver based on bisection
+
+### Fixed
+- Fix reporting of testers' program name
+- Fix build issues without Fortran interface
+
+## [21.8.29] - 2021-08-29
+### Added
+- Add transpose option to xGETRS() functions
+- Add transpose option to xGELS() functions
+- Add convenience scripts for C and Fortran examples
+- Add Python script for quickly launching tests
+
+### Removed
+- Remove Fortran code and comments producing warnings
+
+### Fixed
+- Fix wrong pointer in tuning
+- Fix division by zero for zero-matrix norm
+- Fix error propagation in sequences
+- Fix LU factorization for rectangular matrices
+
+## [20.9.20] - 2020-09-20
+### Added
+- New detection of Apple's Accelerate Framework as BLAS and LAPACK implementations
+- New GPU offload option detection of the MAGMA library
+- Version reporting in tester
+
+### Removed
+- Remove POSIX threads code and now only OpenMP threading support
+
+### Fixed
+- Fix support for wider range of CMake versions
+- Fix Fortran examples' syntax
