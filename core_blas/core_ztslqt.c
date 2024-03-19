@@ -15,7 +15,7 @@
 #include "coreblas_internal.h"
 #include "core_lapack.h"
 
-#include <omp.h>
+
 
 #undef REAL
 #define COMPLEX

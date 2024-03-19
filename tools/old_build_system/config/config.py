@@ -1851,7 +1851,7 @@ void foo( int x )
 # ------------------------------------------------------------------------------
 'omp_cc.c': r'''
 #include <stdio.h>
-#include <omp.h>
+
 
 int main( int argc, char** argv )
 {

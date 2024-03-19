@@ -17,7 +17,7 @@
 #include "coreblas_internal.h"
 #include "coreblas_types.h"
 
-#include <omp.h>
+
 #include <assert.h>
 #include <math.h>
 

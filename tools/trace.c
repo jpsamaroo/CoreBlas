@@ -36,7 +36,7 @@
 // - you do not call the constructor trace_init(),
 // - you do not call the destructor trace_finish().
 
-#include <omp.h>
+
 #include <math.h>
 #include <time.h>
 #include <stdio.h>

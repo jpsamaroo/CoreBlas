@@ -15,7 +15,7 @@
 #include "coreblas_internal.h"
 #include "core_lapack.h"
 
-#include <omp.h>
+
 
 // This will be swapped during the automatic code generation.
 #undef REAL

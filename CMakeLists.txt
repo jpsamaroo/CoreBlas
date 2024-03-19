@@ -184,19 +184,6 @@ if (COREBLAS_DETECT_MAGMA)
   endif()
 endif()
 
-# use standard module to find OpenMP
-find_package( OpenMP )
-if (OPENMP_FOUND)
-  #if (OpenMP_C_VERSION  VERSION_LESS 4.5)
-  #  message(FATAL_ERROR "OpenMP C version ${OpenMP_C_VERSION} is too old. Version 4.5 or later is required.")
-  #endif()
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  # set C++ flags in case C++ compiler is used to compiler COREBLAS
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-else()
-  message(FATAL_ERROR "OpenMP not found.")
-endif()
-
 
 add_library(coreblas_blas SHARED include/coreblas.h
 core_blas/core_clag2z.c core_blas/core_dcabs1.c core_blas/core_scabs1.c core_blas/core_dzamax.c core_blas/core_zgeadd.c core_blas/core_zgelqt.c
