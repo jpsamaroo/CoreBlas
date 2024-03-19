@@ -28,7 +28,7 @@ include(CheckFunctionExists)
 include(CheckIncludeFiles)
 
 # Factorize some piece of code
-#include(FindCommon)
+include(FindCommon)
 
 # To find headers and libs
 include(FindHeadersAndLibs)
