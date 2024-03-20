@@ -11,7 +11,7 @@ endif()
 
 #set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 #find_package( Threads )
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/compute/scamax.c")
   message( STATUS "Some generated files already exist, proceeding" )
 else ()
@@ -39,94 +39,54 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
 # use standard module to find BLAS (calls CMake's FindThreads.cmake if necessary)
 # typically succeeds when `sgemm' is found
 # use BLA_VENDOR (by default "All") "Intel" "Intel10_32" "Intel10_64lp" "Intel10_64p_seq" "IBMESSL" "Generic"
-set(coreblas_dep"")
+find_package( BLAS )
+if (BLAS_FOUND)
+  message( STATUS "Found BLAS libraries ${BLAS_LIBRARIES}" )
+else ()
+  message( STATUS "BLAS not found. Set BLAS_LIBRARIES in command line with -D option or with GUI." )
+  find_package( BLAS REQUIRED ) # this is guaranteed to fail with more info for the user
+endif ()
 
-find_package(CBLAS REQUIRED)
-if(CBLAS_FOUND)
-    if (CBLAS_INCLUDE_DIRS_DEP)
-        include_directories(${CBLAS_INCLUDE_DIRS_DEP})
-    endif()
-    if(CBLAS_CFLAGS_OTHER_DEP)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CBLAS_CFLAGS_OTHER_DEP}")
-        string(REPLACE ";" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-    endif()
-    if(CBLAS_LDFLAGS_OTHER_DEP)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CBLAS_LDFLAGS_OTHER_DEP}")
-        string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-    endif()
-    if(CBLAS_LIBRARY_DIRS_DEP)
-        list(APPEND CMAKE_INSTALL_RPATH "${CBLAS_LIBRARY_DIRS_DEP}")
-    endif()
-    if (CBLAS_LIBRARIES_DEP)
-        list(INSERT coreblas_dep 0 ${CBLAS_LIBRARIES_DEP})
-    endif()
-else()
-    if(CHAMELEON_VERBOSE_FIND_PACKAGE)
-        if(CBLAS_STANDALONE OR NOT CBLAS_WORKS)
-            if (NOT CBLAS_cblas.h_DIRS)
-                Print_Find_Header_Status(cblas cblas.h)
-            endif ()
-            if (NOT CBLAS_cblas_LIBRARY)
-                Print_Find_Library_Status(cblas libcblas)
-            endif ()
-        endif()
-    else()
-        message(WARNING "CBLAS library has not been found and CHAMELEON_VERBOSE_FIND_PACKAGE is set to OFF."
-        " Try to activate CHAMELEON_VERBOSE_FIND_PACKAGE option (-DCHAMELEON_VERBOSE_FIND_PACKAGE=ON) to get some hints for the detection")
-    endif()
-    message(FATAL_ERROR "A CBLAS library is required but has not been found")
-endif()
- # CHAMELEON depends on LAPACKE
-#-----------------------------
-find_package(LAPACKE REQUIRED COMPONENTS TMG)
-if(LAPACKE_FOUND)
-    if (LAPACKE_INCLUDE_DIRS_DEP)
-        include_directories(${LAPACKE_INCLUDE_DIRS_DEP})
-    endif()
-    if(LAPACKE_CFLAGS_OTHER_DEP)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LAPACKE_CFLAGS_OTHER_DEP}")
-        string(REPLACE ";" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-    endif()
-    if(LAPACKE_LDFLAGS_OTHER_DEP)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LAPACKE_LDFLAGS_OTHER_DEP}")
-        string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-    endif()
-    if(LAPACKE_LIBRARY_DIRS_DEP)
-        list(APPEND CMAKE_INSTALL_RPATH "${LAPACKE_LIBRARY_DIRS_DEP}")
-    endif()
-    if (LAPACKE_LIBRARIES_DEP)
-        list(INSERT coreblas_dep 0 ${LAPACKE_LIBRARIES_DEP})
-    endif()
-else()
-    if(CHAMELEON_VERBOSE_FIND_PACKAGE)
-        if (LAPACKE_STANDALONE OR NOT LAPACKE_WORKS)
-            if (NOT LAPACKE_lapacke.h_DIRS)
-                Print_Find_Header_Status(lapacke lapacke.h)
-            endif ()
-            if (NOT LAPACKE_lapacke_LIBRARY)
-                Print_Find_Library_Status(lapacke liblapacke)
-            endif ()
-        endif()
-    else()
-        message(WARNING "LAPACKE library has not been found and CHAMELEON_VERBOSE_FIND_PACKAGE is set to OFF."
-        " Try to activate CHAMELEON_VERBOSE_FIND_PACKAGE option (-DCHAMELEON_VERBOSE_FIND_PACKAGE=ON) to get some hints for the detection")
-    endif()
-    message(FATAL_ERROR "A LAPACKE library is required but has not been found")
-endif()
+# use standard module to find LAPACK (calls FindBLAS.cmake if necessary)
+# typically succeeds when `cheev' is found
+find_package( LAPACK REQUIRED )
+if (LAPACK_FOUND)
+  message( STATUS "Found LAPACK libraries ${LAPACK_LIBRARIES}" )
+else ()
+  message( STATUS "LAPACK not found. Set LAPACK_LIBRARIES in command line with -D option or with GUI." )
+  find_package( LAPACK REQUIRED ) # this is guaranteed to fail with more info for the user
+endif ()
 
-#list(APPEND CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+list(APPEND CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
 
 macro( coreblas_found_openblas )
   add_definitions( -DCOREBLAS_WITH_OPENBLAS )
   set( COREBLAS_WITH_OPENBLAS 1 )
 endmacro( coreblas_found_openblas )
 
+find_package( OpenBLAS CONFIG ) # OpenBLAS 0.3.* provide CMake configuration file
+if (OpenBLAS_FOUND)
+  message( STATUS "Found OpenBLAS ${OpenBLAS_VERSION}")
+  find_path(OpenBLAS_INCLUDE_DIRS openblas_config.h PATHS ${OpenBLAS_DIR} ENV OPENBLAS_ROOT PATH_SUFFIXES include DOC "Path to OpenBLAS include directory")
+  find_library(OpenBLAS_LIBRARIES openblas PATHS ${OpenBLAS_DIR} ENV OpenBLAS_DIR)
 
+  # make sure OpenBLAS headers are visible to CMake tests, compiler, and linker
+  include_directories(${OpenBLAS_INCLUDE_DIRS})
+  list(APPEND CMAKE_REQUIRED_INCLUDES ${OpenBLAS_INCLUDE_DIRS})
+  list(APPEND CMAKE_REQUIRED_LIBRARIES ${OpenBLAS_LIBRARIES})
 
-#message( STATUS "BLAS(${BLAS_FOUND})" )  # linker flags `${BLA_LINKER_FLAGS}'" )
-#message( STATUS "LAPACK(${LAPACK_FOUND})" )  # libraries: ${LAPACK_LIBRARIES}" )
+  set(CBLAS_PROVIDER openblas)
+  set(LAPACKE_PROVIDER openblas)
+  coreblas_found_openblas()
+else ()
+  message( STATUS "OpenBLAS 0.3.* not found. Set OpenBLAS_DIR environment variable." )
+  message( STATUS "Either file OpenBLASConfig.cmake or openblas-config.cmake, should be inside OpenBLAS_DIR directory tree." )
+endif ()
 
-if (CBLAS_FOUND)
+message( STATUS "BLAS(${BLAS_FOUND})" )  # linker flags `${BLA_LINKER_FLAGS}'" )
+message( STATUS "LAPACK(${LAPACK_FOUND})" )  # libraries: ${LAPACK_LIBRARIES}" )
+
+if (BLAS_FOUND)
   # BLA_VENDOR is the input variable to allow only checks for specific vendor BLAS
   #if ( BLA_VENDOR STREQUAL "Intel" OR BLA_VENDOR STREQUAL "Intel10_32" OR BLA_VENDOR STREQUAL "Intel10_64lp" OR BLA_VENDOR STREQUAL "Intel10_64p_seq" )
   if ( BLAS_LIBRARIES MATCHES "mkl_core" )
@@ -172,12 +132,11 @@ if (CBLAS_FOUND)
     set(CMAKE_EXTRA_INCLUDE_FILES "$COREBLAS_CMAKE_EXTRA_INCLUDE_FILES")
   endif ()
 
-endif(CBLAS_FOUND)
+endif (BLAS_FOUND)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-#find_package( CBLAS REQUIRED )
-message(STATUS "CBLAS_PROVIDER: `${CBLAS_PROVIDER}'")
+find_package( CBLAS REQUIRED )
 include_directories(${CBLAS_INCLUDE_DIRS})
 if (CBLAS_PROVIDER STREQUAL "mkl")
   add_definitions(-DCOREBLAS_WITH_MKL)
@@ -185,19 +144,16 @@ if (CBLAS_PROVIDER STREQUAL "mkl")
 elseif (CBLAS_PROVIDER STREQUAL "netlib")
   add_definitions(-DCOREBLAS_WITH_NETLIB)
   set(COREBLAS_WITH_NETLIB TRUE)
-  elseif (CBLAS_PROVIDER STREQUAL "openblas")
-  add_definitions(-DCOREBLAS_WITH_OPENBLAS)
-  set(COREBLAS_WITH_OPENBLAS TRUE)
 endif()
 
-#find_package( LAPACKE REQUIRED )
-#include_directories(${LAPACKE_INCLUDE_DIRS})
+find_package( LAPACKE REQUIRED )
+include_directories(${LAPACKE_INCLUDE_DIRS})
 
 if (${CMAKE_VERSION} VERSION_GREATER 3.11.99)
   cmake_policy(POP)
 endif()
 
-#set(COREBLAS_LINALG_LIBRARIES )
+set(COREBLAS_LINALG_LIBRARIES ${LAPACKE_LIBRARIES} ${LAPACK_LIBRARIES} ${CBLAS_LIBRARIES} ${BLAS_LIBRARIES})
 
 if (COREBLAS_DETECT_LUA)
   find_package( Lua )
@@ -229,7 +185,7 @@ if (COREBLAS_DETECT_MAGMA)
 endif()
 
 
-add_library(coreblas SHARED include/coreblas.h
+add_library(coreblas_blas SHARED include/coreblas.h
 core_blas/core_clag2z.c core_blas/core_dcabs1.c core_blas/core_scabs1.c core_blas/core_dzamax.c core_blas/core_zgeadd.c core_blas/core_zgelqt.c
 core_blas/core_zgemm.c core_blas/core_zgeqrt.c core_blas/core_zgessq.c 
 #core_blas/core_zgeswp.c core_blas/core_zgetrf.c
@@ -299,7 +255,7 @@ core_blas/core_clarfb_gemm.c core_blas/core_dlarfb_gemm.c core_blas/core_slarfb_
 core_blas/core_clacpy.c core_blas/core_dlacpy.c core_blas/core_slacpy.c core_blas/core_zlacpy.c 
 )
 
-target_include_directories(coreblas PUBLIC
+target_include_directories(coreblas_blas PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
@@ -307,20 +263,20 @@ target_include_directories(coreblas PUBLIC
 find_library(MATH_LIBRARY m)
 if( MATH_LIBRARY )
   # OpenBLAS needs to link C math library (usually -lm) but MKL doesn't
-  set(COREBLAS_LIBRARIES ${COREBLAS_LINALG_LIBRARIES} ${LUA_LIBRARIES} ${MATH_LIBRARY} ${coreblas_dep})
+  set(COREBLAS_LIBRARIES ${COREBLAS_LINALG_LIBRARIES} ${LUA_LIBRARIES} ${MATH_LIBRARY})
 else( MATH_LIBRARY )
-  set(COREBLAS_LIBRARIES ${COREBLAS_LINALG_LIBRARIES} ${LUA_LIBRARIES} ${coreblas_dep})
+  set(COREBLAS_LIBRARIES ${COREBLAS_LINALG_LIBRARIES} ${LUA_LIBRARIES})
 endif( MATH_LIBRARY )
 
 if ( MAGMA_FOUND )
-    target_link_libraries(coreblas ${COREBLAS_LIBRARIES} ${MAGMA_LIBRARIES} ${CUDA_LIBRARIES} )
+    target_link_libraries(coreblas_blas ${COREBLAS_LIBRARIES} ${MAGMA_LIBRARIES} ${CUDA_LIBRARIES} )
 else()
-  target_link_libraries(coreblas ${COREBLAS_LIBRARIES} )
+  target_link_libraries(coreblas_blas ${COREBLAS_LIBRARIES} )
 endif()
-target_link_libraries( coreblas ${COREBLAS_LIBRARIES} )
+target_link_libraries( coreblas_blas ${COREBLAS_LIBRARIES} )
 
 configure_file( include/coreblas_config.hin ${CMAKE_CURRENT_SOURCE_DIR}/include/coreblas_config.h @ONLY NEWLINE_STYLE LF )
 
-install(TARGETS coreblas LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS coreblas_blas LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 file( GLOB coreblas_headers include/coreblas*.h)
 install(FILES ${coreblas_headers} DESTINATION include)
