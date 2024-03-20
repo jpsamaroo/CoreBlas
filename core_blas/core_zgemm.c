@@ -93,7 +93,7 @@ void coreblas_zgemm(coreblas_enum_t transa, coreblas_enum_t transb,
                                           const coreblas_complex64_t *B, int ldb,
                 coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
 {
-    cblas_zgemm(CblasColMajor,
+    cblas_zgemm_64(CblasColMajor,
                 (CBLAS_TRANSPOSE)transa, (CBLAS_TRANSPOSE)transb,
                 m, n, k,
                 CBLAS_SADDR(alpha), A, lda,
