@@ -39,6 +39,11 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
 # use standard module to find BLAS (calls CMake's FindThreads.cmake if necessary)
 # typically succeeds when `sgemm' is found
 # use BLA_VENDOR (by default "All") "Intel" "Intel10_32" "Intel10_64lp" "Intel10_64p_seq" "IBMESSL" "Generic"
+macro( coreblas_found_openblas )
+  add_definitions( -DCOREBLAS_WITH_OPENBLAS )
+  set( COREBLAS_WITH_OPENBLAS 1 )
+endmacro( coreblas_found_openblas )
+
 find_package( BLAS )
 if (BLAS_FOUND)
   message( STATUS "Found BLAS libraries ${BLAS_LIBRARIES}" )
@@ -62,6 +67,7 @@ else()
     include_directories(${OpenBLAS_INCLUDE_DIRS})
     list(APPEND CMAKE_REQUIRED_INCLUDES ${OpenBLAS_INCLUDE_DIRS})
     list(APPEND CMAKE_REQUIRED_LIBRARIES ${OpenBLAS_LIBRARIES})
+    set(BLAS_LIBRARIES ${BLAS_LIBRARIES})
 
     set(CBLAS_PROVIDER openblas)
     set(LAPACKE_PROVIDER openblas)
@@ -76,15 +82,7 @@ else()
 endif(BLAS_FOUND)
 
 
-
 #list(APPEND CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
-
-macro( coreblas_found_openblas )
-  add_definitions( -DCOREBLAS_WITH_OPENBLAS )
-  set( COREBLAS_WITH_OPENBLAS 1 )
-endmacro( coreblas_found_openblas )
-
-
 
 #message( STATUS "BLAS(${BLAS_FOUND})" )  # linker flags `${BLA_LINKER_FLAGS}'" )
 #message( STATUS "LAPACK(${LAPACK_FOUND})" )  # libraries: ${LAPACK_LIBRARIES}" )
