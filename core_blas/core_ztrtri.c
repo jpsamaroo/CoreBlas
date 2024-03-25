@@ -60,21 +60,14 @@ int coreblas_ztrtri(coreblas_enum_t uplo, coreblas_enum_t diag,
                  int n,
                  coreblas_complex64_t *A, int lda)
 {
-    return LAPACKE_ztrtri_work(LAPACK_COL_MAJOR,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        return LAPACKE_ztrtri_work64_(LAPACK_COL_MAJOR,
                         lapack_const(uplo), lapack_const(diag),
                         n, A, lda);
-}
-
-/******************************************************************************/
-void coreblas_kernel_ztrtri(coreblas_enum_t uplo, coreblas_enum_t diag,
-                     int n,
-                     coreblas_complex64_t *A, int lda,
-                     int iinfo)
-{
-
-    int info = coreblas_ztrtri(uplo, diag,
-                           n, A, lda);
-    if (info != 0)
-        coreblas_error("core_ztrtri() failed");
+    #else
+        return LAPACKE_ztrtri_work(LAPACK_COL_MAJOR,
+                        lapack_const(uplo), lapack_const(diag),
+                        n, A, lda);
+    #endif
 
 }

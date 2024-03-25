@@ -22,25 +22,21 @@ void coreblas_zgessq(int m, int n,
                  const coreblas_complex64_t *A, int lda,
                  double *scale, double *sumsq)
 {
+    *scale = 0.0;
+    *sumsq = 1.0;
     int ione = 1;
     for (int j = 0; j < n; j++) {
         // TODO: Inline this operation.
-        LAPACK_zlassq(&m, &A[j*lda], &ione, scale, sumsq);
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACK_zlassq64_(&m, &A[j*lda], &ione, scale, sumsq);
+        #else
+            LAPACK_zlassq(&m, &A[j*lda], &ione, scale, sumsq);
+        #endif 
     }
 }
 
 /******************************************************************************/
-void coreblas_kernel_zgessq(int m, int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *scale, double *sumsq)
-{
-    *scale = 0.0;
-    *sumsq = 1.0;
-    coreblas_zgessq(m, n, A, lda, scale, sumsq);
-}
-
-/******************************************************************************/
-void coreblas_kernel_zgessq_aux(int n,
+void coreblas_zgessq_aux(int n,
                          const double *scale, const double *sumsq,
                          double *value)
 {

@@ -191,13 +191,31 @@ int coreblas_zpemv(coreblas_enum_t trans, int storev,
             // l top rows of y
             if (l > 0) {
                 // w = A_2^H * x_2
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                cblas_zcopy64_(l, &X[incx*(m-l)], incx, work, 1);
+                cblas_ztrmv64_(CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
+                            (CBLAS_TRANSPOSE)trans,
+                            (CBLAS_DIAG)CoreBlasNonUnit,
+                            l, &A[m-l], lda, work, 1);
+            #else
                 cblas_zcopy(l, &X[incx*(m-l)], incx, work, 1);
                 cblas_ztrmv(CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
                             (CBLAS_TRANSPOSE)trans,
                             (CBLAS_DIAG)CoreBlasNonUnit,
                             l, &A[m-l], lda, work, 1);
+            #endif 
+
 
                 if (m > l) {
+                #ifdef COREBLAS_USE_64BIT_BLAS
+                    // y_1 = beta * y_1 [ + alpha * A_1 * x_1 ]
+                    cblas_zgemv64_(CblasColMajor, (CBLAS_TRANSPOSE)trans,
+                                m-l, l, CBLAS_SADDR(alpha), A, lda,
+                                X, incx, CBLAS_SADDR(beta), Y, incy);
+
+                    // y_1 = y_1 + alpha * w
+                    cblas_zaxpy64_(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                #else
                     // y_1 = beta * y_1 [ + alpha * A_1 * x_1 ]
                     cblas_zgemv(CblasColMajor, (CBLAS_TRANSPOSE)trans,
                                 m-l, l, CBLAS_SADDR(alpha), A, lda,
@@ -205,16 +223,30 @@ int coreblas_zpemv(coreblas_enum_t trans, int storev,
 
                     // y_1 = y_1 + alpha * w
                     cblas_zaxpy(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                #endif 
+
                 }
                 else {
                     // y_1 = y_1 + alpha * w
                     if (beta == 0.0) {
+                    #ifdef COREBLAS_USE_64BIT_BLAS
+                        cblas_zscal64_(l, CBLAS_SADDR(alpha), work, 1);
+                        cblas_zcopy64_(l, work, 1, Y, incy);
+                    #else
                         cblas_zscal(l, CBLAS_SADDR(alpha), work, 1);
                         cblas_zcopy(l, work, 1, Y, incy);
+                    #endif 
+
                     }
                     else {
+                    #ifdef COREBLAS_USE_64BIT_BLAS
+                        cblas_zscal64_(l, CBLAS_SADDR(beta), Y, incy);
+                        cblas_zaxpy64_(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                    #else
                         cblas_zscal(l, CBLAS_SADDR(beta), Y, incy);
                         cblas_zaxpy(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                    #endif 
+
                     }
                 }
             }
@@ -222,9 +254,16 @@ int coreblas_zpemv(coreblas_enum_t trans, int storev,
             // n-l bottom rows of Y
             if (n > l) {
                 int k = n - l;
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                cblas_zgemv64_(CblasColMajor, (CBLAS_TRANSPOSE)trans,
+                            m, k, CBLAS_SADDR(alpha), &A[lda*l], lda,
+                            X, incx, CBLAS_SADDR(beta), &Y[incy*l], incy);
+            #else
                 cblas_zgemv(CblasColMajor, (CBLAS_TRANSPOSE)trans,
                             m, k, CBLAS_SADDR(alpha), &A[lda*l], lda,
                             X, incx, CBLAS_SADDR(beta), &Y[incy*l], incy);
+            #endif 
+
             }
         }
     }
@@ -242,41 +281,82 @@ int coreblas_zpemv(coreblas_enum_t trans, int storev,
         if (trans == CoreBlasNoTrans) {
             // l top rows of A and y
             if (l > 0) {
-                // w = A_2 * x_2
-                cblas_zcopy(l, &X[incx*(n-l)], incx, work, 1);
-                cblas_ztrmv(CblasColMajor, (CBLAS_UPLO)CoreBlasLower,
+                #ifdef COREBLAS_USE_64BIT_BLAS
+                                // w = A_2 * x_2
+                    cblas_zcopy64_(l, &X[incx*(n-l)], incx, work, 1);
+                    cblas_ztrmv64_(CblasColMajor, (CBLAS_UPLO)CoreBlasLower,
                             (CBLAS_TRANSPOSE)CoreBlasNoTrans,
                             (CBLAS_DIAG)CoreBlasNonUnit,
                             l, &A[lda*(n-l)], lda, work, 1);
+                #else
+                                // w = A_2 * x_2
+                    cblas_zcopy(l, &X[incx*(n-l)], incx, work, 1);
+                    cblas_ztrmv(CblasColMajor, (CBLAS_UPLO)CoreBlasLower,
+                            (CBLAS_TRANSPOSE)CoreBlasNoTrans,
+                            (CBLAS_DIAG)CoreBlasNonUnit,
+                            l, &A[lda*(n-l)], lda, work, 1);
+                #endif 
+
 
                 if (n > l) {
+                #ifdef COREBLAS_USE_64BIT_BLAS
                     // y_1 = beta * y_1 [ + alpha * A_1 * x_1 ]
+                    cblas_zgemv64_(CblasColMajor, (CBLAS_TRANSPOSE)CoreBlasNoTrans,
+                                l, n-l, CBLAS_SADDR(alpha), A, lda,
+                                X, incx, CBLAS_SADDR(beta), Y, incy);
+
+                    // y_1 = y_1 + alpha * w
+                    cblas_zaxpy64_(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                #else
+                                    // y_1 = beta * y_1 [ + alpha * A_1 * x_1 ]
                     cblas_zgemv(CblasColMajor, (CBLAS_TRANSPOSE)CoreBlasNoTrans,
                                 l, n-l, CBLAS_SADDR(alpha), A, lda,
                                 X, incx, CBLAS_SADDR(beta), Y, incy);
 
                     // y_1 = y_1 + alpha * w
                     cblas_zaxpy(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                #endif 
+
                 }
                 else {
                     // y_1 = y_1 + alpha * w
                     if (beta == 0.0) {
+                    #ifdef COREBLAS_USE_64BIT_BLAS
+                        cblas_zscal64_(l, CBLAS_SADDR(alpha), work, 1);
+                        cblas_zcopy64_(l, work, 1, Y, incy);
+                    #else
                         cblas_zscal(l, CBLAS_SADDR(alpha), work, 1);
                         cblas_zcopy(l, work, 1, Y, incy);
+                    #endif 
+
                     }
                     else {
+                    #ifdef COREBLAS_USE_64BIT_BLAS
+                        cblas_zscal64_(l, CBLAS_SADDR(beta), Y, incy);
+                        cblas_zaxpy64_(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                    #else
                         cblas_zscal(l, CBLAS_SADDR(beta), Y, incy);
                         cblas_zaxpy(l, CBLAS_SADDR(alpha), work, 1, Y, incy);
+                    #endif 
+
                     }
                 }
             }
 
             // m-l bottom rows of Y
             if (m > l) {
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                cblas_zgemv64_(
+                        CblasColMajor, (CBLAS_TRANSPOSE)CoreBlasNoTrans,
+                        m-l, n, CBLAS_SADDR(alpha), &A[l], lda,
+                        X, incx, CBLAS_SADDR(beta), &Y[incy*l], incy);
+            #else
                 cblas_zgemv(
                         CblasColMajor, (CBLAS_TRANSPOSE)CoreBlasNoTrans,
                         m-l, n, CBLAS_SADDR(alpha), &A[l], lda,
                         X, incx, CBLAS_SADDR(beta), &Y[incy*l], incy);
+            #endif 
+
             }
         }
         // Rowwise/[Conj]Trans

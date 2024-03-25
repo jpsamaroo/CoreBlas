@@ -218,8 +218,20 @@ int coreblas_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
             ni = n - i;
             jc = i;
         }
-
-        // Apply H or H^H.
+    #ifdef COREBLAS_USE_64BIT_BLAS
+            // Apply H or H^H.
+        LAPACKE_zlarfb_work64_(LAPACK_COL_MAJOR,
+                            lapack_const(side),
+                            lapack_const(trans),
+                            lapack_const(CoreBlasForward),
+                            lapack_const(CoreBlasRowwise),
+                            mi, ni, kb,
+                            &A[lda*i+i], lda,
+                            &T[ldt*i], ldt,
+                            &C[ldc*jc+ic], ldc,
+                            work, ldwork);
+    #else
+            // Apply H or H^H.
         LAPACKE_zlarfb_work(LAPACK_COL_MAJOR,
                             lapack_const(side),
                             lapack_const(trans),
@@ -230,34 +242,9 @@ int coreblas_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
                             &T[ldt*i], ldt,
                             &C[ldc*jc+ic], ldc,
                             work, ldwork);
+    #endif
+
     }
 
     return CoreBlasSuccess;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
-                     int m, int n, int k, int ib,
-                     const coreblas_complex64_t *A, int lda,
-                     const coreblas_complex64_t *T, int ldt,
-                           coreblas_complex64_t *C, int ldc,
-                     coreblas_complex64_t *work, int ldwork)
-{
-    int ak;
-    if (side == CoreBlasLeft)
-        ak = m;
-    else
-        ak = n;
-
-    // Call the kernel.
-    int info = coreblas_zunmlq(side, trans,
-                           m, n, k, ib,
-                           A, lda,
-                           T, ldt,
-                           C, ldc,
-                           work, ldwork); 
-    if (info != CoreBlasSuccess) {
-        coreblas_error("core_zunmlq() failed");
-    }
-
 }

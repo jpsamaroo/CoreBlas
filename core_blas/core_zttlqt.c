@@ -154,14 +154,50 @@ int coreblas_zttlqt(int m, int n, int ib,
             // Generate elementary reflector H(ii*ib+i) to annihilate
             // A(ii*ib+i, ii*ib+i:m).
 #ifdef COMPLEX
-            LAPACKE_zlacgv_work(ni, &A2[j], lda2);
-            LAPACKE_zlacgv_work(1, &A1[lda1*j+j], lda1);
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        LAPACKE_zlacgv_work64_(ni, &A2[j], lda2);
+        LAPACKE_zlacgv_work64_(1, &A1[lda1*j+j], lda1);
+    #else
+        LAPACKE_zlacgv_work(ni, &A2[j], lda2);
+        LAPACKE_zlacgv_work(1, &A1[lda1*j+j], lda1);
+    #endif
 #endif
-            LAPACKE_zlarfg_work(ni+1, &A1[lda1*j+j], &A2[j], lda2, &tau[j]);
+
+#ifdef COREBLAS_USE_64BIT_BLAS
+        LAPACKE_zlarfg_work64_(ni+1, &A1[lda1*j+j], &A2[j], lda2, &tau[j]);
+#else
+        LAPACKE_zlarfg_work(ni+1, &A1[lda1*j+j], &A2[j], lda2, &tau[j]);
+#endif
 
             coreblas_complex64_t alpha;
             if (mi > 0) {
                 // Apply H(j-1) to A(j:ii+ib-1, j-1:m) from the right.
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                cblas_zcopy64_(
+                    mi,
+                    &A1[lda1*j+(j+1)], 1,
+                    work, 1);
+
+                coreblas_complex64_t zone  = 1.0;
+                cblas_zgemv64_(
+                    CblasColMajor, (CBLAS_TRANSPOSE)CoreBlasNoTrans,
+                    mi, ni,
+                    CBLAS_SADDR(zone), &A2[j+1], lda2,
+                    &A2[j], lda2,
+                    CBLAS_SADDR(zone), work, 1);
+
+                alpha = -(tau[j]);
+                cblas_zaxpy64_(
+                    mi, CBLAS_SADDR(alpha),
+                    work, 1,
+                    &A1[lda1*j+j+1], 1);
+
+                cblas_zgerc64_(
+                    CblasColMajor, mi, ni,
+                    CBLAS_SADDR(alpha), work, 1,
+                    &A2[j], lda2,
+                    &A2[j+1], lda2);
+            #else
                 cblas_zcopy(
                     mi,
                     &A1[lda1*j+(j+1)], 1,
@@ -186,13 +222,16 @@ int coreblas_zttlqt(int m, int n, int ib,
                     CBLAS_SADDR(alpha), work, 1,
                     &A2[j], lda2,
                     &A2[j+1], lda2);
+            #endif
+
             }
 
             // Calculate T.
             if (i > 0 ) {
                 int l = imin(i, imax(0, n-ii));
                 alpha = -(tau[j]);
-                coreblas_zpemv(
+                #ifdef COREBLAS_USE_64BIT_BLAS
+                    coreblas_zpemv64_(
                         CoreBlasNoTrans, CoreBlasRowwise,
                         i, imin(j, n), l,
                         alpha, &A2[ii], lda2,
@@ -200,18 +239,42 @@ int coreblas_zttlqt(int m, int n, int ib,
                         0.0, &T[ldt*j], 1,
                         work);
 
-                // T(0:i-1, j) = T(0:i-1, ii:j-1) * T(0:i-1, j)
-                cblas_ztrmv(
+                    // T(0:i-1, j) = T(0:i-1, ii:j-1) * T(0:i-1, j)
+                    cblas_ztrmv64_(
                         CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
                         (CBLAS_TRANSPOSE)CoreBlasNoTrans,
                         (CBLAS_DIAG)CoreBlasNonUnit,
                         i, &T[ldt*ii], ldt,
                         &T[ldt*j], 1);
+                #else
+                    coreblas_zpemv(
+                        CoreBlasNoTrans, CoreBlasRowwise,
+                        i, imin(j, n), l,
+                        alpha, &A2[ii], lda2,
+                        &A2[j], lda2,
+                        0.0, &T[ldt*j], 1,
+                        work);
+
+                    // T(0:i-1, j) = T(0:i-1, ii:j-1) * T(0:i-1, j)
+                    cblas_ztrmv(
+                        CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
+                        (CBLAS_TRANSPOSE)CoreBlasNoTrans,
+                        (CBLAS_DIAG)CoreBlasNonUnit,
+                        i, &T[ldt*ii], ldt,
+                        &T[ldt*j], 1);
+                #endif
+
             }
 
 #ifdef COMPLEX
-            LAPACKE_zlacgv_work(ni, &A2[j], lda2 );
-            LAPACKE_zlacgv_work(1, &A1[lda1*j+j], lda1 );
+#ifdef COREBLAS_USE_64BIT_BLAS
+    LAPACKE_zlacgv_work64_(ni, &A2[j], lda2 );
+    LAPACKE_zlacgv_work64_(1, &A1[lda1*j+j], lda1 );
+#else
+    LAPACKE_zlacgv_work(ni, &A2[j], lda2 );
+    LAPACKE_zlacgv_work(1, &A1[lda1*j+j], lda1 );
+#endif
+
 #endif
             T[ldt*j+i] = tau[j];
         }
@@ -221,37 +284,29 @@ int coreblas_zttlqt(int m, int n, int ib,
             int mi = m-(ii+sb);
             int ni = imin(ii+sb, n);
             int l  = imin(sb, imax(0, ni-ii));
-            coreblas_zparfb(
-                CoreBlasRight, CoreBlasNoTrans,
-                CoreBlasForward, CoreBlasRowwise,
-                mi, ib, mi, ni, sb, l,
-                &A1[lda1*ii+ii+sb], lda1,
-                &A2[ii+sb], lda2,
-                &A2[ii], lda2,
-                &T[ldt*ii], ldt,
-                work, m);
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                coreblas_zparfb64_(
+                    CoreBlasRight, CoreBlasNoTrans,
+                    CoreBlasForward, CoreBlasRowwise,
+                    mi, ib, mi, ni, sb, l,
+                    &A1[lda1*ii+ii+sb], lda1,
+                    &A2[ii+sb], lda2,
+                    &A2[ii], lda2,
+                    &T[ldt*ii], ldt,
+                    work, m);
+            #else
+                coreblas_zparfb(
+                    CoreBlasRight, CoreBlasNoTrans,
+                    CoreBlasForward, CoreBlasRowwise,
+                    mi, ib, mi, ni, sb, l,
+                    &A1[lda1*ii+ii+sb], lda1,
+                    &A2[ii+sb], lda2,
+                    &A2[ii], lda2,
+                    &T[ldt*ii], ldt,
+                    work, m);
+            #endif
+
         }
     }
     return CoreBlasSuccess;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zttlqt(int m, int n, int ib,
-                     coreblas_complex64_t *A1, int lda1,
-                     coreblas_complex64_t *A2, int lda2,
-                     coreblas_complex64_t *T,  int ldt,
-                     coreblas_complex64_t *work)
-{
-
-    // Call the kernel.
-    int info = coreblas_zttlqt(m, n, ib,
-                           A1, lda1,
-                           A2, lda2,
-                           T,  ldt,
-                           work,
-                           work+m);
-    if (info != CoreBlasSuccess) {
-        coreblas_error("core_ztslqt() failed");
-    }
-
 }

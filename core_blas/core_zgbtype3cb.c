@@ -146,26 +146,48 @@ void coreblas_zgbtype3cb(coreblas_enum_t uplo, int n, int nb,
          * ========================*/
         // Apply right on A(st:ed,st:ed) 
         ctmp = *TAUP(taupos);
-        LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                                len, len, VP(vpos), ctmp, AU(st, st), LDX, WORK);
+        #else
+            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
                             len, len, VP(vpos), ctmp, AU(st, st), LDX, WORK);
+        #endif
+
 
         // Eliminate the created col at st 
         *VQ(vpos) = 1.;
         memcpy( VQ(vpos+1), AU(st+1, st), (len-1)*sizeof(coreblas_complex64_t) );
         memset( AU(st+1, st), 0, (len-1)*sizeof(coreblas_complex64_t) );
-        LAPACKE_zlarfg_work(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfg_work64_(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+        #else
+            LAPACKE_zlarfg_work(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+        #endif
         lenj = len-1;
         ctmp = conj(*TAUQ(taupos));
-        LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
                             len, lenj, VQ(vpos), ctmp, AU(st, st+1), LDX, WORK);
+        #else
+            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+                            len, lenj, VQ(vpos), ctmp, AU(st, st+1), LDX, WORK);
+        #endif
+
     }else{
         /* ========================
          *       LOWER CASE
          * ========================*/
         // Apply left on A(st:ed,st:ed) 
         ctmp = conj(*TAUQ(taupos));
-        LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
-                            len, len, VQ(vpos), ctmp, AL(st, st), LDX, WORK);
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+                        len, len, VQ(vpos), ctmp, AL(st, st), LDX, WORK);
+        #else
+            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+                        len, len, VQ(vpos), ctmp, AL(st, st), LDX, WORK);
+        #endif
+
         // Eliminate the created row at st
         *VP(vpos) = 1.;
         for(i=1; i<len; i++){
@@ -173,12 +195,22 @@ void coreblas_zgbtype3cb(coreblas_enum_t uplo, int n, int nb,
             *AL(st, st+i)   = 0.;
         }
         ctmp = conj(*AL(st, st));
-        LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfg_work64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+        #else
+            LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+        #endif
         *AL(st, st) = ctmp;
         lenj = len-1;
         ctmp = (*TAUP(taupos));
-        LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                        lenj, len, VP(vpos), ctmp, AL(st+1, st), LDX, WORK);
+        #else
+            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
                             lenj, len, VP(vpos), ctmp, AL(st+1, st), LDX, WORK);
+        #endif
+
     }
     // end of uplo case 
     return;

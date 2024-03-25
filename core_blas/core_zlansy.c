@@ -23,24 +23,22 @@ void coreblas_zlansy(coreblas_enum_t norm, coreblas_enum_t uplo,
                  const coreblas_complex64_t *A, int lda,
                  double *work, double *value)
 {
-    *value = LAPACKE_zlansy_work(LAPACK_COL_MAJOR,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        *value = LAPACKE_zlansy_work64_(LAPACK_COL_MAJOR,
                                  lapack_const(norm),
                                  lapack_const(uplo),
                                  n, A, lda, work);
+    #else
+        *value = LAPACKE_zlansy_work(LAPACK_COL_MAJOR,
+                                 lapack_const(norm),
+                                 lapack_const(uplo),
+                                 n, A, lda, work);
+    #endif
+
 }
 
 /******************************************************************************/
-void coreblas_kernel_zlansy(coreblas_enum_t norm, coreblas_enum_t uplo,
-                     int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *work, double *value)
-{
-
-    coreblas_zlansy(norm, uplo, n, A, lda, work, value);
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlansy_aux(coreblas_enum_t norm, coreblas_enum_t uplo,
+void coreblas_zlansy_aux(coreblas_enum_t norm, coreblas_enum_t uplo,
                          int n,
                          const coreblas_complex64_t *A, int lda,
                          double *value)

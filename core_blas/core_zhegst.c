@@ -71,23 +71,20 @@ int coreblas_zhegst(int itype, coreblas_enum_t uplo,
                 coreblas_complex64_t *A, int lda,
                 coreblas_complex64_t *B, int ldb)
 {
-    int info = LAPACKE_zhegst_work(
-        LAPACK_COL_MAJOR,
-        itype,
-        lapack_const(uplo),
-        n, A, lda, B, ldb );
+    int info;
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        info = LAPACKE_zhegst_work64_(
+                       LAPACK_COL_MAJOR,
+                       itype,
+                       lapack_const(uplo),
+                       n, A, lda, B, ldb );
+    #else
+        info = LAPACKE_zhegst_work(
+                       LAPACK_COL_MAJOR,
+                       itype,
+                       lapack_const(uplo),
+                       n, A, lda, B, ldb );
+    #endif 
+
     return info;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zhegst(int itype, coreblas_enum_t uplo,
-                     int n,
-                     coreblas_complex64_t *A, int lda,
-                     coreblas_complex64_t *B, int ldb)
-{
-
-        coreblas_zhegst(itype, uplo,
-                    n,
-                    A, lda,
-                    B, ldb);
 }

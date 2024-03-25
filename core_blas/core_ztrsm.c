@@ -91,31 +91,20 @@ void coreblas_ztrsm(coreblas_enum_t side, coreblas_enum_t uplo,
                 coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
                                                 coreblas_complex64_t *B, int ldb)
 {
-    cblas_ztrsm(CblasColMajor,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        cblas_ztrsm64_(CblasColMajor,
                 (CBLAS_SIDE)side, (CBLAS_UPLO)uplo,
                 (CBLAS_TRANSPOSE)transa, (CBLAS_DIAG)diag,
                 m, n,
                 CBLAS_SADDR(alpha), A, lda,
                                     B, ldb);
-}
+    #else
+        cblas_ztrsm(CblasColMajor,
+                (CBLAS_SIDE)side, (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transa, (CBLAS_DIAG)diag,
+                m, n,
+                CBLAS_SADDR(alpha), A, lda,
+                                    B, ldb);
+    #endif
 
-/******************************************************************************/
-void coreblas_kernel_ztrsm(
-    coreblas_enum_t side, coreblas_enum_t uplo,
-    coreblas_enum_t transa, coreblas_enum_t diag,
-    int m, int n,
-    coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
-                                    coreblas_complex64_t *B, int ldb)
-{
-    int ak;
-    if (side == CoreBlasLeft)
-        ak = m;
-    else
-        ak = n;
-
-    coreblas_ztrsm(side, uplo,
-               transa, diag,
-               m, n,
-               alpha, A, lda,
-                B, ldb);
 }

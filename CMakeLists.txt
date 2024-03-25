@@ -44,6 +44,9 @@ macro( coreblas_found_openblas )
   set( COREBLAS_WITH_OPENBLAS 1 )
 endmacro( coreblas_found_openblas )
 
+set(COREBLAS_USE_64BIT_BLAS OFF CACHE INTERNAL
+    "Enable BLAS/LAPACK routines for 64bit architures")
+    
 find_package( BLAS )
 if (BLAS_FOUND)
   message( STATUS "Found BLAS libraries ${BLAS_LIBRARIES}" )
@@ -81,6 +84,10 @@ else()
 
 endif(BLAS_FOUND)
 
+#if(COREBLAS_USE_64BIT_BLAS)
+#  set( COREBLAS_USE_64BIT_BLAS 1)
+#  add_definitions(-DCOREBLAS_USE_64BIT_BLAS)
+#endif() 
 
 #list(APPEND CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
 

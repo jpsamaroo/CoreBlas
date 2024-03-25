@@ -64,11 +64,20 @@ void coreblas_zlacpy(coreblas_enum_t uplo, coreblas_enum_t transa,
                        coreblas_complex64_t *B, int ldb)
 {
     if (transa == CoreBlasNoTrans) {
-        LAPACKE_zlacpy_work(LAPACK_COL_MAJOR,
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlacpy_work64_(LAPACK_COL_MAJOR,
                             lapack_const(uplo),
                             m, n,
                             A, lda,
                             B, ldb);
+        #else
+            LAPACKE_zlacpy_work(LAPACK_COL_MAJOR,
+                            lapack_const(uplo),
+                            m, n,
+                            A, lda,
+                            B, ldb);
+        #endif
+
     }
     else if (transa == CoreBlasTrans) {
         switch (uplo) {
@@ -108,17 +117,4 @@ void coreblas_zlacpy(coreblas_enum_t uplo, coreblas_enum_t transa,
             break;
         }
     }
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlacpy(coreblas_enum_t uplo, coreblas_enum_t transa,
-                     int m, int n,
-                     const coreblas_complex64_t *A, int lda,
-                           coreblas_complex64_t *B, int ldb)
-{
-
-    coreblas_zlacpy(uplo, transa,
-                m, n,
-                A, lda,
-                B, ldb);
 }

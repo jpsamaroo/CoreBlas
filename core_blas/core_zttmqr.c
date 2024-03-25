@@ -240,40 +240,26 @@ int coreblas_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
             jc = i;
             l  = imin(kb, imax(0, n2-i));
         }
-
-        // Apply H or H^H (NOTE: coreblas_zparfb used to be core_zttrfb).
-        coreblas_zparfb(side, trans, CoreBlasForward, CoreBlasColumnwise,
+        #ifdef COREBLAS_USE_64BIT_BLAS
+                // Apply H or H^H (NOTE: coreblas_zparfb used to be core_zttrfb).
+            coreblas_zparfb64_(side, trans, CoreBlasForward, CoreBlasColumnwise,
                     mi, ni, mi2, ni2, kb, l,
                     &A1[lda1*jc+ic], lda1,
                     A2, lda2,
                     &V[ldv*i], ldv,
                     &T[ldt*i], ldt,
                     work, ldwork);
+        #else
+                // Apply H or H^H (NOTE: coreblas_zparfb used to be core_zttrfb).
+            coreblas_zparfb(side, trans, CoreBlasForward, CoreBlasColumnwise,
+                    mi, ni, mi2, ni2, kb, l,
+                    &A1[lda1*jc+ic], lda1,
+                    A2, lda2,
+                    &V[ldv*i], ldv,
+                    &T[ldt*i], ldt,
+                    work, ldwork);
+        #endif
     }
 
     return CoreBlasSuccess;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
-                     int m1, int n1, int m2, int n2, int k, int ib,
-                           coreblas_complex64_t *A1, int lda1,
-                           coreblas_complex64_t *A2, int lda2,
-                     const coreblas_complex64_t *V, int ldv,
-                     const coreblas_complex64_t *T, int ldt,
-                     coreblas_complex64_t *work, int ldwork)
-{
-
-    // Call the kernel.
-    int info = coreblas_zttmqr(side, trans,
-                           m1, n1, m2, n2, k, ib,
-                           A1, lda1,
-                           A2, lda2,
-                           V,  ldv,
-                           T,  ldt,
-                           work,  ldwork);
-    if (info != CoreBlasSuccess) {
-        coreblas_error("core_zttmqr() failed");
-    }
-
 }

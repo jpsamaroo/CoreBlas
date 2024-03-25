@@ -56,22 +56,19 @@ void coreblas_zlange(coreblas_enum_t norm, int m, int n,
                  const coreblas_complex64_t *A, int lda,
                  double *work, double *value)
 {
-    *value = LAPACKE_zlange_work(LAPACK_COL_MAJOR,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        *value = LAPACKE_zlange_work64_(LAPACK_COL_MAJOR,
                                  lapack_const(norm),
                                  m, n, A, lda, work);
+    #else
+        *value = LAPACKE_zlange_work(LAPACK_COL_MAJOR,
+                                 lapack_const(norm),
+                                 m, n, A, lda, work);
+    #endif
+
 }
-
 /******************************************************************************/
-void coreblas_kernel_zlange(coreblas_enum_t norm, int m, int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *work, double *value)
-{
-
-    coreblas_zlange(norm, m, n, A, lda, work, value);
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlange_aux(coreblas_enum_t norm, int m, int n,
+void coreblas_zlange_aux(coreblas_enum_t norm, int m, int n,
                          const coreblas_complex64_t *A, int lda,
                          double *value)
 {

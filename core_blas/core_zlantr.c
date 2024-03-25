@@ -34,21 +34,17 @@ void coreblas_zlantr(coreblas_enum_t norm, coreblas_enum_t uplo, coreblas_enum_t
     char nrm = lapack_const(norm);
     char upl = lapack_const(uplo);
     char dia = lapack_const(diag);
-    *value = LAPACK_zlantr(&nrm, &upl, &dia, &m, &n, A, &lda, work);
+    
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        *value = LAPACK_zlantr64_(&nrm, &upl, &dia, &m, &n, A, &lda, work);
+    #else
+        *value = LAPACK_zlantr(&nrm, &upl, &dia, &m, &n, A, &lda, work);
+
+    #endif
 }
 
 /******************************************************************************/
-void coreblas_kernel_zlantr(coreblas_enum_t norm, coreblas_enum_t uplo, coreblas_enum_t diag,
-                     int m, int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *work, double *value)
-{
-
-    coreblas_zlantr(norm, uplo, diag, m, n, A, lda, work, value);
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlantr_aux(coreblas_enum_t norm, coreblas_enum_t uplo,
+void coreblas_zlantr_aux(coreblas_enum_t norm, coreblas_enum_t uplo,
                          coreblas_enum_t diag,
                          int m, int n,
                          const coreblas_complex64_t *A, int lda,

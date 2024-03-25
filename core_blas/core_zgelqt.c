@@ -137,51 +137,64 @@ int coreblas_zgelqt(int m, int n, int ib,
     int k = imin(m, n);
     for (int i = 0; i < k; i += ib) {
         int sb = imin(ib, k-i);
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zgelq2_work64_(LAPACK_COL_MAJOR,
+                        sb, n-i,
+                        &A[lda*i+i], lda,
+                        &tau[i], work);
+        #else
+            LAPACKE_zgelq2_work(LAPACK_COL_MAJOR,
+                        sb, n-i,
+                        &A[lda*i+i], lda,
+                        &tau[i], work);
+        #endif
 
-        LAPACKE_zgelq2_work(LAPACK_COL_MAJOR,
-                            sb, n-i,
-                            &A[lda*i+i], lda,
-                            &tau[i], work);
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarft_work64_(LAPACK_COL_MAJOR,
+                        lapack_const(CoreBlasForward),
+                        lapack_const(CoreBlasRowwise),
+                        n-i, sb,
+                        &A[lda*i+i], lda,
+                        &tau[i],
+                        &T[ldt*i], ldt);
+        #else
+            LAPACKE_zlarft_work(LAPACK_COL_MAJOR,
+                       lapack_const(CoreBlasForward),
+                       lapack_const(CoreBlasRowwise),
+                       n-i, sb,
+                       &A[lda*i+i], lda,
+                       &tau[i],
+                       &T[ldt*i], ldt);
+        #endif
 
-        LAPACKE_zlarft_work(LAPACK_COL_MAJOR,
-                            lapack_const(CoreBlasForward),
-                            lapack_const(CoreBlasRowwise),
-                            n-i, sb,
-                            &A[lda*i+i], lda,
-                            &tau[i],
-                            &T[ldt*i], ldt);
 
         if (m > i+sb) {
+        #ifdef COREBLAS_USE_64BIT_BLAS
+            LAPACKE_zlarfb_work64_(LAPACK_COL_MAJOR,
+                    lapack_const(CoreBlasRight),
+                    lapack_const(CoreBlasNoTrans),
+                    lapack_const(CoreBlasForward),
+                    lapack_const(CoreBlasRowwise),
+                    m-i-sb, n-i, sb,
+                    &A[lda*i+i],      lda,
+                    &T[ldt*i],        ldt,
+                    &A[lda*i+(i+sb)], lda,
+                    work, m-i-sb);
+        #else
             LAPACKE_zlarfb_work(LAPACK_COL_MAJOR,
-                                lapack_const(CoreBlasRight),
-                                lapack_const(CoreBlasNoTrans),
-                                lapack_const(CoreBlasForward),
-                                lapack_const(CoreBlasRowwise),
-                                m-i-sb, n-i, sb,
-                                &A[lda*i+i],      lda,
-                                &T[ldt*i],        ldt,
-                                &A[lda*i+(i+sb)], lda,
-                                work, m-i-sb);
+                    lapack_const(CoreBlasRight),
+                    lapack_const(CoreBlasNoTrans),
+                    lapack_const(CoreBlasForward),
+                    lapack_const(CoreBlasRowwise),
+                    m-i-sb, n-i, sb,
+                    &A[lda*i+i],      lda,
+                    &T[ldt*i],        ldt,
+                    &A[lda*i+(i+sb)], lda,
+                    work, m-i-sb);
+        #endif
+
         }
     }
 
     return CoreBlasSuccess;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zgelqt(int m, int n, int ib,
-                     coreblas_complex64_t *A, int lda,
-                     coreblas_complex64_t *T, int ldt,
-                     coreblas_complex64_t *work)
-{
-
-    // Call the kernel.
-    int info = coreblas_zgelqt(m, n, ib,
-                           A, lda,
-                           T, ldt,
-                           work,
-                           work+m);
-    if (info != CoreBlasSuccess) {
-        coreblas_error("core_zgelqt() failed");
-    }
 }

@@ -111,20 +111,6 @@ void coreblas_zlacpy_lapack2tile_band(coreblas_enum_t uplo,
     }
 }
 
-/******************************************************************************/
-void coreblas_kernel_zlacpy_lapack2tile_band(coreblas_enum_t uplo,
-                                      int it, int jt,
-                                      int m, int n, int nb, int kl, int ku,
-                                      const coreblas_complex64_t *A, int lda,
-                                            coreblas_complex64_t *B, int ldb)
-{
-
-    coreblas_zlacpy_lapack2tile_band(uplo,
-                                 it, jt, m, n, nb, kl, ku,
-                                 A, lda,
-                                 B, ldb);
-}
-
 /*******************************************************************************
  *
  * @ingroup core_coreblas_complex64_t
@@ -205,18 +191,4 @@ void coreblas_zlacpy_tile2lapack_band(coreblas_enum_t uplo,
             A[i + j*lda] = B[i + j*ldb];
         }
     }
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlacpy_tile2lapack_band(coreblas_enum_t uplo,
-                                      int it, int jt,
-                                      int m, int n, int nb, int kl, int ku,
-                                      const coreblas_complex64_t *B, int ldb,
-                                            coreblas_complex64_t *A, int lda)
-{
-
-    coreblas_zlacpy_tile2lapack_band(uplo,
-                                 it, jt, m, n, nb, kl, ku,
-                                 B, ldb,
-                                 A, lda);
 }

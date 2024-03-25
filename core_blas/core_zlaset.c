@@ -63,21 +63,15 @@ void coreblas_zlaset(coreblas_enum_t uplo, int m, int n,
         memset((void*)A, 0, (size_t)m*n*sizeof(coreblas_complex64_t));
     }
     else {
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        // Use LAPACKE_zlaset_work to initialize the matrix.
+        LAPACKE_zlaset_work64_(LAPACK_COL_MAJOR, lapack_const(uplo),
+                            m, n, alpha, beta, A, lda);
+    #else
         // Use LAPACKE_zlaset_work to initialize the matrix.
         LAPACKE_zlaset_work(LAPACK_COL_MAJOR, lapack_const(uplo),
                             m, n, alpha, beta, A, lda);
-    }
-}
+    #endif 
 
-/******************************************************************************/
-void coreblas_kernel_zlaset(coreblas_enum_t uplo,
-                     int mb, int nb,
-                     int i, int j,
-                     int m, int n,
-                     coreblas_complex64_t alpha, coreblas_complex64_t beta,
-                     coreblas_complex64_t *A)
-{
-    coreblas_zlaset(uplo, m, n,
-                alpha, beta,
-                A+i+j*mb, mb);
+    }
 }

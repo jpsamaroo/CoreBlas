@@ -76,27 +76,18 @@ void coreblas_zherk(coreblas_enum_t uplo, coreblas_enum_t trans,
                 double alpha, const coreblas_complex64_t *A, int lda,
                 double beta,        coreblas_complex64_t *C, int ldc)
 {
-    cblas_zherk(CblasColMajor,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        cblas_zherk64_(CblasColMajor,
                 (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)trans,
                 n, k,
                 alpha, A, lda,
                 beta,  C, ldc);
-}
+    #else
+        cblas_zherk(CblasColMajor,
+                (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)trans,
+                n, k,
+                alpha, A, lda,
+                beta,  C, ldc);
+    #endif
 
-/******************************************************************************/
-void coreblas_kernel_zherk(coreblas_enum_t uplo, coreblas_enum_t trans,
-                    int n, int k,
-                    double alpha, const coreblas_complex64_t *A, int lda,
-                    double beta,        coreblas_complex64_t *C, int ldc)
-{
-    int ak;
-    if (trans == CoreBlasNoTrans)
-        ak = k;
-    else
-        ak = n;
-
-    coreblas_zherk(uplo, trans,
-               n, k,
-               alpha, A, lda,
-               beta,  C, ldc);
 }

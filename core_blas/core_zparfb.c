@@ -240,20 +240,37 @@ int coreblas_zparfb(coreblas_enum_t side, coreblas_enum_t trans,
                        A2,   lda2,
                        V,    ldv,
                        work, ldwork);
-
-            // W = op(T) * W
+        #ifdef COREBLAS_USE_64BIT_BLAS
+                    // W = op(T) * W
+            cblas_ztrmm64_(CblasColMajor,
+                        CblasLeft, CblasUpper,
+                        (CBLAS_TRANSPOSE)trans, CblasNonUnit,
+                        k, n2,
+                        CBLAS_SADDR(zone), T,    ldt,
+                                           work, ldwork);
+        #else
+                    // W = op(T) * W
             cblas_ztrmm(CblasColMajor,
                         CblasLeft, CblasUpper,
                         (CBLAS_TRANSPOSE)trans, CblasNonUnit,
                         k, n2,
                         CBLAS_SADDR(zone), T,    ldt,
                                            work, ldwork);
+        #endif 
+
 
             // A1 = A1 - W
             for (int j = 0; j < n1; j++) {
-                cblas_zaxpy(k, CBLAS_SADDR(zmone),
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                    cblas_zaxpy64_(k, CBLAS_SADDR(zmone),
                             &work[ldwork*j], 1,
                             &A1[lda1*j], 1);
+            #else
+                    cblas_zaxpy(k, CBLAS_SADDR(zmone),
+                            &work[ldwork*j], 1,
+                            &A1[lda1*j], 1);
+            #endif 
+
             }
 
             // A2 = A2 - op(V) * W
@@ -278,20 +295,38 @@ int coreblas_zparfb(coreblas_enum_t side, coreblas_enum_t trans,
                        A2,   lda2,
                        V,    ldv,
                        work, ldwork);
-
-            // W = W * op(T)
+ 
+        #ifdef COREBLAS_USE_64BIT_BLAS
+                    // W = W * op(T)
+            cblas_ztrmm64_(CblasColMajor,
+                        CblasRight, CblasUpper,
+                        (CBLAS_TRANSPOSE)trans, CblasNonUnit,
+                        m2, k,
+                        CBLAS_SADDR(zone), T,    ldt,
+                                           work, ldwork);
+        #else
+                    // W = W * op(T)
             cblas_ztrmm(CblasColMajor,
                         CblasRight, CblasUpper,
                         (CBLAS_TRANSPOSE)trans, CblasNonUnit,
                         m2, k,
                         CBLAS_SADDR(zone), T,    ldt,
                                            work, ldwork);
+        #endif
+
 
             // A1 = A1 - W
             for (int j = 0; j < k; j++) {
-                cblas_zaxpy(m1, CBLAS_SADDR(zmone),
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                    cblas_zaxpy64_(m1, CBLAS_SADDR(zmone),
                             &work[ldwork*j], 1,
                             &A1[lda1*j], 1);
+            #else
+                    cblas_zaxpy(m1, CBLAS_SADDR(zmone),
+                            &work[ldwork*j], 1,
+                            &A1[lda1*j], 1);
+            #endif 
+
             }
 
             // A2 = A2 - W * op(V)

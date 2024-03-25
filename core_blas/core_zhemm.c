@@ -84,31 +84,20 @@ void coreblas_zhemm(coreblas_enum_t side, coreblas_enum_t uplo,
                                           const coreblas_complex64_t *B, int ldb,
                 coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
 {
-    cblas_zhemm(CblasColMajor,
-                (CBLAS_SIDE)side, (CBLAS_UPLO)uplo,
-                m, n,
-                CBLAS_SADDR(alpha), A, lda,
-                                    B, ldb,
-                CBLAS_SADDR(beta),  C, ldc);
-}
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        cblas_zhemm64_(CblasColMajor,
+                    (CBLAS_SIDE)side, (CBLAS_UPLO)uplo,
+                    m, n,
+                    CBLAS_SADDR(alpha), A, lda,
+                                        B, ldb,
+                    CBLAS_SADDR(beta),  C, ldc);
+    #else
+        cblas_zhemm(CblasColMajor,
+                    (CBLAS_SIDE)side, (CBLAS_UPLO)uplo,
+                    m, n,
+                    CBLAS_SADDR(alpha), A, lda,
+                                        B, ldb,
+                    CBLAS_SADDR(beta),  C, ldc);
+    #endif 
 
-/******************************************************************************/
-void coreblas_kernel_zhemm(
-    coreblas_enum_t side, coreblas_enum_t uplo,
-    int m, int n,
-    coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
-                              const coreblas_complex64_t *B, int ldb,
-    coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
-{
-    int ak;
-    if (side == CoreBlasLeft)
-        ak = m;
-    else
-        ak = n;
-
-    coreblas_zhemm(side, uplo,
-               m, n,
-               alpha, A, lda,
-                      B, ldb,
-               beta,  C, ldc);
 }

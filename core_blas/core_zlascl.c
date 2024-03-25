@@ -26,22 +26,18 @@ void coreblas_zlascl(coreblas_enum_t uplo,
     int ku;
     int info;
     char type = lapack_const(uplo);
-    LAPACK_zlascl(&type,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        LAPACK_zlascl_64(&type,
                   &kl, &ku,
                   &cfrom, &cto,
                   &m, &n,
                   A, &lda, &info);
-}
+    #else
+        LAPACK_zlascl(&type,
+                  &kl, &ku,
+                  &cfrom, &cto,
+                  &m, &n,
+                  A, &lda, &info);
+    #endif
 
-/******************************************************************************/
-void coreblas_kernel_zlascl(coreblas_enum_t uplo,
-                     double cfrom, double cto,
-                     int m, int n,
-                     coreblas_complex64_t *A, int lda)
-{
-
-    coreblas_zlascl(uplo,
-                cfrom, cto,
-                m, n,
-                A, lda);
 }

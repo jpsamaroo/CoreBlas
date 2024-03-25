@@ -56,22 +56,16 @@ int coreblas_zpotrf(coreblas_enum_t uplo,
                  int n,
                  coreblas_complex64_t *A, int lda)
 {
-    return LAPACKE_zpotrf_work(LAPACK_COL_MAJOR,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        return LAPACKE_zpotrf_work64_(LAPACK_COL_MAJOR,
                                lapack_const(uplo),
                                n,
                                A, lda);
-}
+    #else
+        return LAPACKE_zpotrf_work(LAPACK_COL_MAJOR,
+                               lapack_const(uplo),
+                               n,
+                               A, lda);
+    #endif
 
-/******************************************************************************/
-void coreblas_kernel_zpotrf(coreblas_enum_t uplo,
-                     int n,
-                     coreblas_complex64_t *A, int lda,
-                     int iinfo)
-{
-
-    int info = coreblas_zpotrf(uplo,
-                           n,
-                           A, lda);
-    if (info != 0)
-        coreblas_error("core_zpotrf() failed");
 }

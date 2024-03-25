@@ -156,8 +156,14 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             }
             // Apply remaining Left commming from type1/3_upper 
             ctmp = conj(*TAUQ(taupos));
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
-                                lem, len, VQ(vpos), ctmp, AU(st, J1), LDX, WORK);
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+                        lem, len, VQ(vpos), ctmp, AU(st, J1), LDX, WORK);
+            #else
+                LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+                        lem, len, VQ(vpos), ctmp, AU(st, J1), LDX, WORK);
+            #endif
+
         }
 
         if( len > 1 ) {
@@ -176,7 +182,11 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             }
             // Eliminate the row  at st 
             ctmp = conj(*AU(st, J1));
-            LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACKE_zlarfg_work64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            #else
+                LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            #endif
             *AU(st, J1) = ctmp;
             /*
              * Apply Right on A(J1:J2,st+1:ed)
@@ -185,8 +195,14 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
              */
             lem = lem-1;
             ctmp = *TAUP(taupos);
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
-                                lem, len, VP(vpos), ctmp, AU(st+1, J1), LDX, WORK);
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                            lem, len, VP(vpos), ctmp, AU(st+1, J1), LDX, WORK);
+            #else
+                LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+                            lem, len, VP(vpos), ctmp, AU(st+1, J1), LDX, WORK);
+            #endif            
+
         }
     }else{
         /* ========================
@@ -202,8 +218,14 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             }
             // Apply remaining Right commming from type1/3_lower 
             ctmp = (*TAUP(taupos));
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                        len, lem, VP(vpos), ctmp, AL(J1, st), LDX, WORK);
+            #else
+                LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
                                 len, lem, VP(vpos), ctmp, AL(J1, st), LDX, WORK);
+            #endif
+
         }
         if( len > 1 ) {
             if( wantz == 0 ) {
@@ -217,8 +239,14 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             *VQ(vpos) = 1.;
             memcpy(VQ(vpos+1), AL(J1+1, st), (len-1)*sizeof(coreblas_complex64_t));
             memset(AL(J1+1, st), 0, (len-1)*sizeof(coreblas_complex64_t));
-            // Eliminate the col  at st 
-            LAPACKE_zlarfg_work(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                // Eliminate the col  at st 
+                LAPACKE_zlarfg_work64_(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            #else
+                // Eliminate the col  at st 
+                LAPACKE_zlarfg_work(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            #endif
+
             /*
              * Apply left on A(J1:J2,st+1:ed)
              * We decrease len because we start at col st+1 instead of st.
@@ -226,8 +254,14 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
              */
             lem = lem-1;
             ctmp = conj(*TAUQ(taupos));
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+                                    len, lem, VQ(vpos), ctmp, AL(J1, st+1), LDX, WORK);
+            #else
+                LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
                                 len, lem, VQ(vpos), ctmp, AL(J1, st+1), LDX, WORK);
+            #endif           
+
         }
     }
     // end of uplo case

@@ -23,17 +23,29 @@ void coreblas_zsyssq(coreblas_enum_t uplo,
                  const coreblas_complex64_t *A, int lda,
                  double *scale, double *sumsq)
 {
+    *scale = 0.0;
+    *sumsq = 1.0;
+
     int ione = 1;
     if (uplo == CoreBlasUpper) {
         for (int j = 1; j < n; j++)
             // TODO: Inline this operation.
-            LAPACK_zlassq(&j, &A[lda*j], &ione, scale, sumsq);
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACK_zlassq64_(&j, &A[lda*j], &ione, scale, sumsq);
+            #else
+                LAPACK_zlassq(&j, &A[lda*j], &ione, scale, sumsq);
+            #endif
+            
     }
     else { // CoreBlasLower
         for (int j = 0; j < n-1; j++) {
             int len = n-j-1;
             // TODO: Inline this operation.
-            LAPACK_zlassq(&len, &A[lda*j+j+1], &ione, scale, sumsq);
+            #ifdef COREBLAS_USE_64BIT_BLAS
+                LAPACK_zlassq64_(&len, &A[lda*j+j+1], &ione, scale, sumsq);
+            #else
+                LAPACK_zlassq(&len, &A[lda*j+j+1], &ione, scale, sumsq);
+            #endif
         }
     }
     *sumsq *= 2.0;
@@ -53,20 +65,7 @@ void coreblas_zsyssq(coreblas_enum_t uplo,
 }
 
 /******************************************************************************/
-void coreblas_kernel_zsyssq(coreblas_enum_t uplo,
-                     int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *scale, double *sumsq)
-{
-
-    *scale = 0.0;
-    *sumsq = 1.0;
-    coreblas_zsyssq(uplo, n, A, lda, scale, sumsq);
-
-}
-
-/******************************************************************************/
-void coreblas_kernel_zsyssq_aux(int m, int n,
+void coreblas_zsyssq_aux(int m, int n,
                          const double *scale, const double *sumsq,
                          double *value)
 {

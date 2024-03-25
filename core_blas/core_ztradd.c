@@ -181,21 +181,3 @@ int coreblas_ztradd(coreblas_enum_t uplo, coreblas_enum_t transa,
 
     return CoreBlasSuccess;
 }
-
-/******************************************************************************/
-void coreblas_kernel_ztradd(
-    coreblas_enum_t uplo, coreblas_enum_t transa,
-    int m, int n,
-    coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
-    coreblas_complex64_t beta,        coreblas_complex64_t *B, int ldb)
-{
-    int k = (transa == CoreBlasNoTrans) ? n : m;
-
-    int retval = coreblas_ztradd(uplo, transa,
-                             m, n,
-                             alpha, A, lda,
-                             beta, B, ldb);
-    if (retval != CoreBlasSuccess) {
-        coreblas_error("core_ztradd() failed");
-    }
-}

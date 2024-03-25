@@ -51,20 +51,11 @@ int coreblas_zlag2c(int m, int n,
                  coreblas_complex32_t *As, int ldas)
 {
     int info;
-    info = LAPACKE_zlag2c_work(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        info = LAPACKE_zlag2c_work64_(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
+    #else
+        info = LAPACKE_zlag2c_work(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
+    #endif
+
     return info;
-}
-
-/******************************************************************************/
-void coreblas_kernel_zlag2c(int m, int n,
-                     coreblas_complex64_t *A,  int lda,
-                     coreblas_complex32_t *As, int ldas)
-{
-
-    int info;
-    info = coreblas_zlag2c(m, n, A, lda, As, ldas);
-    if (info != 0) {
-        // Value will be 1, so it doesn't matter which tile sets status.
-        coreblas_error("core_zgeadd() failed");                    
-    }
 }

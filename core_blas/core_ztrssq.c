@@ -41,6 +41,9 @@ void coreblas_ztrssq(coreblas_enum_t uplo, coreblas_enum_t diag,
                  const coreblas_complex64_t *A, int lda,
                  double *scale, double *sumsq)
 {
+    *scale = 0.0;
+    *sumsq = 1.0;
+    
     if (uplo == CoreBlasUpper) {
         if (diag == CoreBlasNonUnit) {
             for (int j = 0; j < n; j++) {
@@ -84,17 +87,4 @@ void coreblas_ztrssq(coreblas_enum_t uplo, coreblas_enum_t diag,
             }
         }
     }
-}
-
-/******************************************************************************/
-void coreblas_kernel_ztrssq(coreblas_enum_t uplo, coreblas_enum_t diag,
-                     int m, int n,
-                     const coreblas_complex64_t *A, int lda,
-                     double *scale, double *sumsq)
-{
-
-    *scale = 0.0;
-    *sumsq = 1.0;
-    coreblas_ztrssq(uplo, diag, m, n, A, lda, scale, sumsq);
-
 }

@@ -93,38 +93,20 @@ void coreblas_zgemm(coreblas_enum_t transa, coreblas_enum_t transb,
                                           const coreblas_complex64_t *B, int ldb,
                 coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
 {
-    cblas_zgemm_64(CblasColMajor,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        cblas_zgemm64_(CblasColMajor,
                 (CBLAS_TRANSPOSE)transa, (CBLAS_TRANSPOSE)transb,
                 m, n, k,
                 CBLAS_SADDR(alpha), A, lda,
                                     B, ldb,
                 CBLAS_SADDR(beta),  C, ldc);
-}
+    #else
+        cblas_zgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transa, (CBLAS_TRANSPOSE)transb,
+                m, n, k,
+                CBLAS_SADDR(alpha), A, lda,
+                                    B, ldb,
+                CBLAS_SADDR(beta),  C, ldc);
+    #endif  
 
-/******************************************************************************/
-void coreblas_kernel_zgemm(
-    coreblas_enum_t transa, coreblas_enum_t transb,
-    int m, int n, int k,
-    coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
-                              const coreblas_complex64_t *B, int ldb,
-    coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
-{
-    int ak;
-    if (transa == CoreBlasNoTrans)
-        ak = k;
-    else
-        ak = m;
-
-    int bk;
-    if (transb == CoreBlasNoTrans)
-        bk = n;
-    else
-        bk = k;
-
-
-    coreblas_zgemm(transa, transb,
-               m, n, k,
-               alpha, A, lda,
-                      B, ldb,
-               beta,  C, ldc);
 }

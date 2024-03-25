@@ -76,30 +76,18 @@ void coreblas_zsyrk(coreblas_enum_t uplo, coreblas_enum_t trans,
                 coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
                 coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
 {
-    cblas_zsyrk(CblasColMajor,
+    #ifdef COREBLAS_USE_64BIT_BLAS
+        cblas_zsyrk64_(CblasColMajor,
                 (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)trans,
                 n, k,
                 CBLAS_SADDR(alpha), A, lda,
                 CBLAS_SADDR(beta),  C, ldc);
-}
-
-/******************************************************************************/
-void coreblas_kernel_zsyrk(
-    coreblas_enum_t uplo, coreblas_enum_t trans,
-    int n, int k,
-    coreblas_complex64_t alpha, const coreblas_complex64_t *A, int lda,
-    coreblas_complex64_t beta,        coreblas_complex64_t *C, int ldc)
-{
-    int ak;
-    if (trans == CoreBlasNoTrans)
-        ak = k;
-    else
-        ak = n;
-
-
-    coreblas_zsyrk(uplo, trans,
-               n, k,
-               alpha, A, lda,
-               beta,  C, ldc);
+    #else
+        cblas_zsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo, (CBLAS_TRANSPOSE)trans,
+                n, k,
+                CBLAS_SADDR(alpha), A, lda,
+                CBLAS_SADDR(beta),  C, ldc);
+    #endif
 
 }
