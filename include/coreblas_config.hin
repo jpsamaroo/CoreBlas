@@ -1,15 +1,17 @@
 /* PLASMA configuration options */
 
-#cmakedefine PLASMA_CBLAS_ADD_TYPEDEF
+#cmakedefine COREBLAS_CBLAS_ADD_TYPEDEF
 
-#cmakedefine PLASMA_HAVE_MKL
+#cmakedefine COREBLAS_HAVE_MKL
 
-#cmakedefine PLASMA_HAVE_ESSL
+#cmakedefine COREBLAS_HAVE_ESSL
 
-#cmakedefine PLASMA_WITH_ESSL
+#cmakedefine COREBLAS_WITH_ESSL
 
-#cmakedefine PLASMA_WITH_MKL
+#cmakedefine COREBLAS_WITH_MKL
 
-#cmakedefine PLASMA_WITH_NETLIB
+#cmakedefine COREBLAS_WITH_NETLIB
 
-#cmakedefine PLASMA_USE_LUA
+#cmakedefine COREBLAS_USE_LUA
+
+#cmakedefine COREBLAS_USE_64BIT_BLAS
