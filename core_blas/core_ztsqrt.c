@@ -196,10 +196,10 @@ int coreblas_ztsqrt(int m, int n, int ib,
 #endif
 
 #ifdef COREBLAS_USE_64BIT_BLAS
-        blas_zaxpy64_(sb-i-1, CBLAS_SADDR(alpha), work, 1,
+        cblas_zaxpy64_(sb-i-1, CBLAS_SADDR(alpha), work, 1,
                     &A1[lda1*(ii+i+1)+ii+i], lda1);
 #else
-        blas_zaxpy(sb-i-1, CBLAS_SADDR(alpha), work, 1,
+        cblas_zaxpy(sb-i-1, CBLAS_SADDR(alpha), work, 1,
                     &A1[lda1*(ii+i+1)+ii+i], lda1);
 #endif
 

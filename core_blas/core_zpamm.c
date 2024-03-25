@@ -702,11 +702,11 @@ static inline int coreblas_zpamm_a2(
 
                 for (int j = 0; j < l; j++) {
                 #ifdef COREBLAS_USE_64BIT_BLAS
-                    blas_zaxpy64_(m, CBLAS_SADDR(zone),
+                    cblas_zaxpy64_(m, CBLAS_SADDR(zone),
                                 &W[ldw*j], 1,
                                 &A2[lda2*(n-l+j)], 1);
                 #else
-                    blas_zaxpy(m, CBLAS_SADDR(zone),
+                    cblas_zaxpy(m, CBLAS_SADDR(zone),
                                 &W[ldw*j], 1,
                                 &A2[lda2*(n-l+j)], 1);
                 #endif 
