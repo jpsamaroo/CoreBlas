@@ -240,16 +240,7 @@ int coreblas_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
             jc = i;
             l  = imin(kb, imax(0, n2-i));
         }
-        #ifdef COREBLAS_USE_64BIT_BLAS
-                // Apply H or H^H (NOTE: coreblas_zparfb used to be core_zttrfb).
-            coreblas_zparfb64_(side, trans, CoreBlasForward, CoreBlasColumnwise,
-                    mi, ni, mi2, ni2, kb, l,
-                    &A1[lda1*jc+ic], lda1,
-                    A2, lda2,
-                    &V[ldv*i], ldv,
-                    &T[ldt*i], ldt,
-                    work, ldwork);
-        #else
+
                 // Apply H or H^H (NOTE: coreblas_zparfb used to be core_zttrfb).
             coreblas_zparfb(side, trans, CoreBlasForward, CoreBlasColumnwise,
                     mi, ni, mi2, ni2, kb, l,
@@ -258,7 +249,6 @@ int coreblas_zttmqr(coreblas_enum_t side, coreblas_enum_t trans,
                     &V[ldv*i], ldv,
                     &T[ldt*i], ldt,
                     work, ldwork);
-        #endif
     }
 
     return CoreBlasSuccess;
