@@ -250,14 +250,14 @@ int coreblas_zttqrt(int m, int n, int ib,
             if (i > 0) {
                 int l = imin(i, imax(0, m-ii));
                 coreblas_complex64_t alpha = -(tau[j]);
-    #ifdef COREBLAS_USE_64BIT_BLAS
-        coreblas_zpemv64_(
+            coreblas_zpemv(
                 CoreBlas_ConjTrans, CoreBlasColumnwise,
                 imin(j, m), i, l,
                 alpha, &A2[lda2*ii], lda2,
                        &A2[lda2*j],  1,
                 0.0, &T[ldt*j],    1,
                 work);
+    #ifdef COREBLAS_USE_64BIT_BLAS
          // T(0:i-1, j) = T(0:i-1, ii:j-1) * T(0:i-1, j)
         cblas_ztrmv64_(
                 CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
@@ -266,13 +266,6 @@ int coreblas_zttqrt(int m, int n, int ib,
                 i, &T[ldt*ii], ldt,
                    &T[ldt*j], 1);
     #else
-        coreblas_zpemv(
-                CoreBlas_ConjTrans, CoreBlasColumnwise,
-                imin(j, m), i, l,
-                alpha, &A2[lda2*ii], lda2,
-                       &A2[lda2*j],  1,
-                0.0, &T[ldt*j],    1,
-                work);
          // T(0:i-1, j) = T(0:i-1, ii:j-1) * T(0:i-1, j)
         cblas_ztrmv(
                 CblasColMajor, (CBLAS_UPLO)CoreBlasUpper,
