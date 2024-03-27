@@ -601,7 +601,7 @@ static inline int coreblas_zpamm_a2(
             // A2_2 = A2_2 - W_1
             for (int j = 0; j < n; j++) {
             #ifdef COREBLAS_USE_64BIT_BLAS
-                cblas_zaxpy_64(l, CBLAS_SADDR(zmone),
+                cblas_zaxpy64_(l, CBLAS_SADDR(zmone),
                             &W[ldw*j], 1,
                             &A2[lda2*j+(m-l)], 1);
             #else
