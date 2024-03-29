@@ -152,11 +152,11 @@ int coreblas_zttqrt(int m, int n, int ib,
             int ni = sb-i-1;
     #ifdef COREBLAS_USE_64BIT_BLAS
                 // Generate elementary reflector H(j) to annihilate A2(1:mi, j).
-        LAPACKE_zlarfg_work64_(
+        LAPACKE_zlarfg64_(
                     mi+1, &A1[lda1*j+j], &A2[lda2*j], 1, &tau[j]);
     #else
                 // Generate elementary reflector H(j) to annihilate A2(1:mi, j).
-        LAPACKE_zlarfg_work(
+        LAPACKE_zlarfg(
                     mi+1, &A1[lda1*j+j], &A2[lda2*j], 1, &tau[j]);
     #endif
 
@@ -178,9 +178,9 @@ int coreblas_zttqrt(int m, int n, int ib,
 
 #ifdef COMPLEX
     #ifdef COREBLAS_USE_64BIT_BLAS
-        LAPACKE_zlacgv_work64_(ni, work, 1);
+        LAPACKE_zlacgv64_(ni, work, 1);
     #else
-        LAPACKE_zlacgv_work(ni, work, 1);
+        LAPACKE_zlacgv(ni, work, 1);
     #endif
                 
 #endif
@@ -203,9 +203,9 @@ int coreblas_zttqrt(int m, int n, int ib,
 
 #ifdef COMPLEX
     #ifdef COREBLAS_USE_64BIT_BLAS
-        LAPACKE_zlacgv_work64_(ni, work, 1);
+        LAPACKE_zlacgv64_(ni, work, 1);
     #else
-        LAPACKE_zlacgv_work(ni, work, 1);
+        LAPACKE_zlacgv(ni, work, 1);
     #endif               
 #endif
                 coreblas_complex64_t alpha = -conj(tau[j]);
@@ -223,9 +223,9 @@ int coreblas_zttqrt(int m, int n, int ib,
 
 #ifdef COMPLEX
     #ifdef COREBLAS_USE_64BIT_BLAS
-        LAPACKE_zlacgv_work64_(ni, work, 1);
+        LAPACKE_zlacgv64_(ni, work, 1);
     #else
-        LAPACKE_zlacgv_work(ni, work, 1);
+        LAPACKE_zlacgv(ni, work, 1);
     #endif               
 #endif
 
