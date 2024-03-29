@@ -157,18 +157,18 @@ void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
         }
         ctmp = conj(*AU(st-1, st));
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg_work64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            LAPACKE_zlarfg64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
         #else
-            LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            LAPACKE_zlarfg(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
         #endif
         *AU(st-1, st) = ctmp;
         // Apply right on A(st:ed,st:ed) 
         ctmp = *TAUP(taupos);
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+            LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'R',
                             len, len, VP(vpos), ctmp, AU(st, st), LDX, WORK);
         #else
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+            LAPACKE_zlarfx(LAPACK_COL_MAJOR, 'R',
                             len, len, VP(vpos), ctmp, AU(st, st), LDX, WORK);
         #endif
 
@@ -177,19 +177,19 @@ void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
         memcpy( VQ(vpos+1), AU(st+1, st), (len-1)*sizeof(coreblas_complex64_t) );
         memset( AU(st+1, st), 0, (len-1)*sizeof(coreblas_complex64_t) );
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg_work64(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            LAPACKE_zlarfg64(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
         #else
-            LAPACKE_zlarfg_work(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            LAPACKE_zlarfg(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
         #endif
         
         
         lenj = len-1;
         ctmp = conj(*TAUQ(taupos));
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+            LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'L',
                     len, lenj, VQ(vpos), ctmp, AU(st, st+1), LDX, WORK);
         #else
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+            LAPACKE_zlarfx(LAPACK_COL_MAJOR, 'L',
                      len, lenj, VQ(vpos), ctmp, AU(st, st+1), LDX, WORK);
         #endif
 
@@ -202,17 +202,17 @@ void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
         memcpy( VQ(vpos+1), AL(st+1, st-1), (len-1)*sizeof(coreblas_complex64_t) );
         memset( AL(st+1, st-1), 0, (len-1)*sizeof(coreblas_complex64_t) );
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg_work64_(len, AL(st, st-1), VQ(vpos+1), 1, TAUQ(taupos) );
+            LAPACKE_zlarfg64_(len, AL(st, st-1), VQ(vpos+1), 1, TAUQ(taupos) );
         #else
-            LAPACKE_zlarfg_work(len, AL(st, st-1), VQ(vpos+1), 1, TAUQ(taupos) );
+            LAPACKE_zlarfg(len, AL(st, st-1), VQ(vpos+1), 1, TAUQ(taupos) );
         #endif
         // Apply left on A(st:ed,st:ed) 
         ctmp = conj(*TAUQ(taupos));
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+            LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'L',
                         len, len, VQ(vpos), ctmp, AL(st, st), LDX, WORK);
         #else
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
+            LAPACKE_zlarfx(LAPACK_COL_MAJOR, 'L',
                         len, len, VQ(vpos), ctmp, AL(st, st), LDX, WORK);
         #endif
 
@@ -224,19 +224,19 @@ void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
         }
         ctmp = conj(*AL(st, st));
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg_work64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            LAPACKE_zlarfg64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
         #else
-            LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+            LAPACKE_zlarfg(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
         #endif
 
         *AL(st, st) = ctmp;
         lenj = len-1;
         ctmp = (*TAUP(taupos));
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+            LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'R',
                             lenj, len, VP(vpos), ctmp, AL(st+1, st), LDX, WORK);
         #else
-            LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
+            LAPACKE_zlarfx(LAPACK_COL_MAJOR, 'R',
                             lenj, len, VP(vpos), ctmp, AL(st+1, st), LDX, WORK);
         #endif
 

@@ -65,13 +65,13 @@ void coreblas_zlacpy(coreblas_enum_t uplo, coreblas_enum_t transa,
 {
     if (transa == CoreBlasNoTrans) {
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlacpy_work64_(LAPACK_COL_MAJOR,
+            LAPACKE_zlacpy64_(LAPACK_COL_MAJOR,
                             lapack_const(uplo),
                             m, n,
                             A, lda,
                             B, ldb);
         #else
-            LAPACKE_zlacpy_work(LAPACK_COL_MAJOR,
+            LAPACKE_zlacpy(LAPACK_COL_MAJOR,
                             lapack_const(uplo),
                             m, n,
                             A, lda,
