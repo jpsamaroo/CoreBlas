@@ -333,13 +333,13 @@ static inline int coreblas_zpamm_w(
 
             // W = A2_2
             #ifdef COREBLAS_USE_64BIT_BLAS
-                 LAPACKE_zlacpy_work64_(LAPACK_COL_MAJOR,
+                 LAPACKE_zlacpy64_(LAPACK_COL_MAJOR,
                             lapack_const(CoreBlasGeneral),
                             l, n,
                             &A2[k-l], lda2,
                             W,       ldw);
             #else
-                 LAPACKE_zlacpy_work(LAPACK_COL_MAJOR,
+                 LAPACKE_zlacpy(LAPACK_COL_MAJOR,
                             lapack_const(CoreBlasGeneral),
                             l, n,
                             &A2[k-l], lda2,
@@ -444,13 +444,13 @@ static inline int coreblas_zpamm_w(
             if (l > 0) {
                 // W = A2_2
                 #ifdef COREBLAS_USE_64BIT_BLAS
-                    LAPACKE_zlacpy_work64_(LAPACK_COL_MAJOR,
+                    LAPACKE_zlacpy64_(LAPACK_COL_MAJOR,
                                 lapack_const(CoreBlasGeneral),
                                 m, l,
                                 &A2[lda2*(k-l)], lda2,
                                 W,              ldw);
                 #else
-                    LAPACKE_zlacpy_work(LAPACK_COL_MAJOR,
+                    LAPACKE_zlacpy(LAPACK_COL_MAJOR,
                                 lapack_const(CoreBlasGeneral),
                                 m, l,
                                 &A2[lda2*(k-l)], lda2,
