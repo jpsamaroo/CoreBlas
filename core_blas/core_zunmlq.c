@@ -220,7 +220,7 @@ int coreblas_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
         }
     #ifdef COREBLAS_USE_64BIT_BLAS
             // Apply H or H^H.
-        LAPACKE_zlarfb_work64_(LAPACK_COL_MAJOR,
+        LAPACKE_zlarfb64_(LAPACK_COL_MAJOR,
                             lapack_const(side),
                             lapack_const(trans),
                             lapack_const(CoreBlasForward),
@@ -228,8 +228,7 @@ int coreblas_zunmlq(coreblas_enum_t side, coreblas_enum_t trans,
                             mi, ni, kb,
                             &A[lda*i+i], lda,
                             &T[ldt*i], ldt,
-                            &C[ldc*jc+ic], ldc,
-                            work, ldwork);
+                            &C[ldc*jc+ic], ldc);
     #else
             // Apply H or H^H.
         LAPACKE_zlarfb_work(LAPACK_COL_MAJOR,

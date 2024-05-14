@@ -138,10 +138,10 @@ int coreblas_zgeqrt(int m, int n, int ib,
     for (int i = 0; i < k; i += ib) {
         int sb = imin(ib, k-i);
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zgeqr2_work64_(LAPACK_COL_MAJOR,
+            LAPACKE_zgeqr264_(LAPACK_COL_MAJOR,
                         m-i, sb,
                         &A[lda*i+i], lda,
-                        &tau[i], work);
+                        &tau[i]);
         #else
             LAPACKE_zgeqr2_work(LAPACK_COL_MAJOR,
                         m-i, sb,
@@ -150,7 +150,7 @@ int coreblas_zgeqrt(int m, int n, int ib,
         #endif 
 
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarft_work64_(LAPACK_COL_MAJOR,
+            LAPACKE_zlarft64_(LAPACK_COL_MAJOR,
                        lapack_const(CoreBlasForward),
                        lapack_const(CoreBlasColumnwise),
                        m-i, sb,
@@ -170,7 +170,7 @@ int coreblas_zgeqrt(int m, int n, int ib,
 
         if (n > i+sb) {
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfb_work64_(LAPACK_COL_MAJOR,
+            LAPACKE_zlarfb64_(LAPACK_COL_MAJOR,
                                 lapack_const(CoreBlasLeft),
                                 lapack_const(CoreBlas_ConjTrans),
                                 lapack_const(CoreBlasForward),
@@ -178,8 +178,7 @@ int coreblas_zgeqrt(int m, int n, int ib,
                                 m-i, n-i-sb, sb,
                                 &A[lda*i+i],      lda,
                                 &T[ldt*i],        ldt,
-                                &A[lda*(i+sb)+i], lda,
-                                work, n-i-sb);
+                                &A[lda*(i+sb)+i], lda);
         #else
             LAPACKE_zlarfb_work(LAPACK_COL_MAJOR,
                                 lapack_const(CoreBlasLeft),

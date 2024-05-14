@@ -478,7 +478,7 @@ static inline int coreblas_zpamm_w(
                 // W = W + A2_1 * V_1
                 if (k > l) {
                 #ifdef COREBLAS_USE_64BIT_BLAS
-                        cblas_zgemm_64(CblasColMajor,
+                        cblas_zgemm64_(CblasColMajor,
                                 CblasNoTrans, (CBLAS_TRANSPOSE)trans,
                                 m, l, k-l,
                                 CBLAS_SADDR(zone), A2, lda2,

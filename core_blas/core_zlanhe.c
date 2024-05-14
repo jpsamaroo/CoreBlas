@@ -24,10 +24,10 @@ void coreblas_zlanhe(coreblas_enum_t norm, coreblas_enum_t uplo,
                  double *work, double *value)
 {
     #ifdef COREBLAS_USE_64BIT_BLAS
-        *value = LAPACKE_zlanhe_work64_(LAPACK_COL_MAJOR,
+        *value = LAPACKE_zlanhe64_(LAPACK_COL_MAJOR,
                                  lapack_const(norm),
                                  lapack_const(uplo),
-                                 n, A, lda, work);
+                                 n, A, lda);
     #else
         *value = LAPACKE_zlanhe_work(LAPACK_COL_MAJOR,
                                  lapack_const(norm),

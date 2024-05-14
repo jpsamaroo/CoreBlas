@@ -24,10 +24,10 @@ void coreblas_zlansy(coreblas_enum_t norm, coreblas_enum_t uplo,
                  double *work, double *value)
 {
     #ifdef COREBLAS_USE_64BIT_BLAS
-        *value = LAPACKE_zlansy_work64_(LAPACK_COL_MAJOR,
+        *value = LAPACKE_zlansy64_(LAPACK_COL_MAJOR,
                                  lapack_const(norm),
                                  lapack_const(uplo),
-                                 n, A, lda, work);
+                                 n, A, lda);
     #else
         *value = LAPACKE_zlansy_work(LAPACK_COL_MAJOR,
                                  lapack_const(norm),

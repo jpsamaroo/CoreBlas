@@ -73,7 +73,7 @@ int coreblas_zhegst(int itype, coreblas_enum_t uplo,
 {
     int info;
     #ifdef COREBLAS_USE_64BIT_BLAS
-        info = LAPACKE_zhegst_work64_(
+        info = LAPACKE_zhegst64_(
                        LAPACK_COL_MAJOR,
                        itype,
                        lapack_const(uplo),

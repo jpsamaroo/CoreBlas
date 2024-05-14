@@ -57,9 +57,9 @@ void coreblas_zlange(coreblas_enum_t norm, int m, int n,
                  double *work, double *value)
 {
     #ifdef COREBLAS_USE_64BIT_BLAS
-        *value = LAPACKE_zlange_work64_(LAPACK_COL_MAJOR,
+        *value = LAPACKE_zlange64_(LAPACK_COL_MAJOR,
                                  lapack_const(norm),
-                                 m, n, A, lda, work);
+                                 m, n, A, lda);
     #else
         *value = LAPACKE_zlange_work(LAPACK_COL_MAJOR,
                                  lapack_const(norm),

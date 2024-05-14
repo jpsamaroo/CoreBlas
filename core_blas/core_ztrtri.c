@@ -61,7 +61,7 @@ int coreblas_ztrtri(coreblas_enum_t uplo, coreblas_enum_t diag,
                  coreblas_complex64_t *A, int lda)
 {
     #ifdef COREBLAS_USE_64BIT_BLAS
-        return LAPACKE_ztrtri_work64_(LAPACK_COL_MAJOR,
+        return LAPACKE_ztrtri64_(LAPACK_COL_MAJOR,
                         lapack_const(uplo), lapack_const(diag),
                         n, A, lda);
     #else

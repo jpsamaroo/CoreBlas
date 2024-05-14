@@ -157,7 +157,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             // Apply remaining Left commming from type1/3_upper 
             ctmp = conj(*TAUQ(taupos));
             #ifdef COREBLAS_USE_64BIT_BLAS
-                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+                LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'L',
                         lem, len, VQ(vpos), ctmp, AU(st, J1), LDX, WORK);
             #else
                 LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
@@ -183,7 +183,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             // Eliminate the row  at st 
             ctmp = conj(*AU(st, J1));
             #ifdef COREBLAS_USE_64BIT_BLAS
-                LAPACKE_zlarfg_work64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
+                LAPACKE_zlarfg64_(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
             #else
                 LAPACKE_zlarfg_work(len, &ctmp, VP(vpos+1), 1, TAUP(taupos) );
             #endif
@@ -196,7 +196,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             lem = lem-1;
             ctmp = *TAUP(taupos);
             #ifdef COREBLAS_USE_64BIT_BLAS
-                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'R',
                             lem, len, VP(vpos), ctmp, AU(st+1, J1), LDX, WORK);
             #else
                 LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
@@ -219,7 +219,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             // Apply remaining Right commming from type1/3_lower 
             ctmp = (*TAUP(taupos));
             #ifdef COREBLAS_USE_64BIT_BLAS
-                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'R',
+                LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'R',
                         len, lem, VP(vpos), ctmp, AL(J1, st), LDX, WORK);
             #else
                 LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'R',
@@ -241,7 +241,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             memset(AL(J1+1, st), 0, (len-1)*sizeof(coreblas_complex64_t));
             #ifdef COREBLAS_USE_64BIT_BLAS
                 // Eliminate the col  at st 
-                LAPACKE_zlarfg_work64_(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
+                LAPACKE_zlarfg64_(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
             #else
                 // Eliminate the col  at st 
                 LAPACKE_zlarfg_work(len, AL(J1, st), VQ(vpos+1), 1, TAUQ(taupos) );
@@ -255,7 +255,7 @@ void coreblas_zgbtype2cb (coreblas_enum_t uplo, int n, int nb,
             lem = lem-1;
             ctmp = conj(*TAUQ(taupos));
             #ifdef COREBLAS_USE_64BIT_BLAS
-                LAPACKE_zlarfx_work64_(LAPACK_COL_MAJOR, 'L',
+                LAPACKE_zlarfx64_(LAPACK_COL_MAJOR, 'L',
                                     len, lem, VQ(vpos), ctmp, AL(J1, st+1), LDX, WORK);
             #else
                 LAPACKE_zlarfx_work(LAPACK_COL_MAJOR, 'L',
