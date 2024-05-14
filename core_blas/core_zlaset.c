@@ -65,7 +65,7 @@ void coreblas_zlaset(coreblas_enum_t uplo, int m, int n,
     else {
     #ifdef COREBLAS_USE_64BIT_BLAS
         // Use LAPACKE_zlaset_work to initialize the matrix.
-        LAPACKE_zlaset_work64_(LAPACK_COL_MAJOR, lapack_const(uplo),
+        LAPACKE_zlaset64_(LAPACK_COL_MAJOR, lapack_const(uplo),
                             m, n, alpha, beta, A, lda);
     #else
         // Use LAPACKE_zlaset_work to initialize the matrix.

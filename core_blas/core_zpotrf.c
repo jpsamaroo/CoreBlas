@@ -57,7 +57,7 @@ int coreblas_zpotrf(coreblas_enum_t uplo,
                  coreblas_complex64_t *A, int lda)
 {
     #ifdef COREBLAS_USE_64BIT_BLAS
-        return LAPACKE_zpotrf_work64_(LAPACK_COL_MAJOR,
+        return LAPACKE_zpotrf64_(LAPACK_COL_MAJOR,
                                lapack_const(uplo),
                                n,
                                A, lda);

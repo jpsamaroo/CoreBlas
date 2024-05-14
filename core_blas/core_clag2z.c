@@ -51,7 +51,7 @@ void coreblas_clag2z(int m, int n,
                  coreblas_complex64_t *A,  int lda)
 {
 #ifdef COREBLAS_USE_64BIT_BLAS
-    LAPACKE_clag2z_work64_(LAPACK_COL_MAJOR, m, n, As, ldas, A, lda);
+    LAPACKE_clag2z64_(LAPACK_COL_MAJOR, m, n, As, ldas, A, lda);
 #else
     LAPACKE_clag2z_work(LAPACK_COL_MAJOR, m, n, As, ldas, A, lda);
 #endif

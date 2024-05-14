@@ -160,8 +160,8 @@ int coreblas_ztslqt(int m, int n, int ib,
             // A(ii*ib+i,ii*ib+i:n).
 #ifdef COMPLEX
      #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlacgv_work64_(n, &A2[ii+i], lda2);
-            LAPACKE_zlacgv_work64_(1, &A1[lda1*(ii+i)+ii+i], lda1);
+            LAPACKE_zlacgv64_(n, &A2[ii+i], lda2);
+            LAPACKE_zlacgv64_(1, &A1[lda1*(ii+i)+ii+i], lda1);
      #else
             LAPACKE_zlacgv_work(n, &A2[ii+i], lda2);
             LAPACKE_zlacgv_work(1, &A1[lda1*(ii+i)+ii+i], lda1);
@@ -169,7 +169,7 @@ int coreblas_ztslqt(int m, int n, int ib,
 
 #endif
     #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg_work64_(n+1, &A1[lda1*(ii+i)+ii+i], &A2[ii+i], lda2,
+            LAPACKE_zlarfg64_(n+1, &A1[lda1*(ii+i)+ii+i], &A2[ii+i], lda2,
                                 &tau[ii+i]);
     #else
             LAPACKE_zlarfg_work(n+1, &A1[lda1*(ii+i)+ii+i], &A2[ii+i], lda2,
@@ -238,8 +238,8 @@ int coreblas_ztslqt(int m, int n, int ib,
 
 #ifdef COMPLEX
     #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlacgv_work64_(n, &A2[ii+i], lda2);
-            LAPACKE_zlacgv_work64_(1, &A1[lda1*(ii+i)+ii+i], lda1);
+            LAPACKE_zlacgv64_(n, &A2[ii+i], lda2);
+            LAPACKE_zlacgv64_(1, &A1[lda1*(ii+i)+ii+i], lda1);
     #else
             LAPACKE_zlacgv_work(n, &A2[ii+i], lda2);
             LAPACKE_zlacgv_work(1, &A1[lda1*(ii+i)+ii+i], lda1);

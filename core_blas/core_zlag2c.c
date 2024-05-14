@@ -52,7 +52,7 @@ int coreblas_zlag2c(int m, int n,
 {
     int info;
     #ifdef COREBLAS_USE_64BIT_BLAS
-        info = LAPACKE_zlag2c_work64_(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
+        info = LAPACKE_zlag2c64_(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
     #else
         info = LAPACKE_zlag2c_work(LAPACK_COL_MAJOR, m, n, A, lda, As, ldas);
     #endif
