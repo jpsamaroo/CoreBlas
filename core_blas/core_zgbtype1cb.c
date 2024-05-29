@@ -177,7 +177,7 @@ void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
         memcpy( VQ(vpos+1), AU(st+1, st), (len-1)*sizeof(coreblas_complex64_t) );
         memset( AU(st+1, st), 0, (len-1)*sizeof(coreblas_complex64_t) );
         #ifdef COREBLAS_USE_64BIT_BLAS
-            LAPACKE_zlarfg64(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
+            LAPACKE_zlarfg64_(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
         #else
             LAPACKE_zlarfg(len, AU(st, st), VQ(vpos+1), 1, TAUQ(taupos) );
         #endif
