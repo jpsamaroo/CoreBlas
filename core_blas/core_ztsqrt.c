@@ -260,15 +260,7 @@ int coreblas_ztsqrt(int m, int n, int ib,
             T[ldt*(ii+i)+i] = tau[ii+i];
         }
         if (n > ii+sb) {
-#ifdef COREBLAS_USE_64BIT_BLAS
-        coreblas_ztsmqr64_(CoreBlasLeft, CoreBlas_ConjTrans,
-                        sb, n-(ii+sb), m, n-(ii+sb), ib, ib,
-                        &A1[lda1*(ii+sb)+ii], lda1,
-                        &A2[lda2*(ii+sb)], lda2,
-                        &A2[lda2*ii], lda2,
-                        &T[ldt*ii], ldt,
-                        work, sb);
-#else
+
         coreblas_ztsmqr(CoreBlasLeft, CoreBlas_ConjTrans,
                         sb, n-(ii+sb), m, n-(ii+sb), ib, ib,
                         &A1[lda1*(ii+sb)+ii], lda1,
@@ -276,7 +268,6 @@ int coreblas_ztsqrt(int m, int n, int ib,
                         &A2[lda2*ii], lda2,
                         &T[ldt*ii], ldt,
                         work, sb);
-#endif
 
         }
     }
