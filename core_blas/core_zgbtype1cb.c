@@ -120,16 +120,16 @@
  *          TYPE 1-BAND-bidiag Lower/Upper columnwise-Householder
  ***************************************************************************/
 
-void coreblas_zgbtype1cb (coreblas_enum_t uplo, blasint n, blasint nb,
-                     coreblas_complex64_t *A, blasint lda,
+void coreblas_zgbtype1cb (coreblas_enum_t uplo, int n, int nb,
+                     coreblas_complex64_t *A, int lda,
                      coreblas_complex64_t *VQ, coreblas_complex64_t *TAUQ,
                      coreblas_complex64_t *VP, coreblas_complex64_t *TAUP,
-                     blasint st, blasint ed, blasint sweep, blasint Vblksiz, blasint wantz,
+                     int st, int ed, int sweep, int Vblksiz, int wantz,
                      coreblas_complex64_t *WORK)
 {
     coreblas_complex64_t ctmp;
-    blasint i, len, LDX, lenj;
-    blasint blkid, vpos, taupos, tpos;
+    int i, len, LDX, lenj;
+    int blkid, vpos, taupos, tpos;
     /* find the pointer to the Vs and Ts as stored by the bulgechasing
      * note that in case no eigenvector required V and T are stored
      * on a vector of size n

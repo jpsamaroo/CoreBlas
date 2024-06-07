@@ -17,11 +17,7 @@
 extern "C" {
 #endif
 
-#ifdef COREBLAS_USE_64BIT_BLAS
-typedef int64_t blasint;
-#else
-typedef int blasint;
-#endif
+
 /***************************************************************************//**
  * This is just for translating enums into appropriate single characters; we
  * will only return the first character of the string; for compatibility with
