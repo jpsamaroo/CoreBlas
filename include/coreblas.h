@@ -17,7 +17,6 @@
 extern "C" {
 #endif
 
-
 /***************************************************************************//**
  * This is just for translating enums into appropriate single characters; we
  * will only return the first character of the string; for compatibility with
