@@ -284,17 +284,7 @@ int coreblas_zttlqt(int m, int n, int ib,
             int mi = m-(ii+sb);
             int ni = imin(ii+sb, n);
             int l  = imin(sb, imax(0, ni-ii));
-            #ifdef COREBLAS_USE_64BIT_BLAS
-                coreblas_zparfb64_(
-                    CoreBlasRight, CoreBlasNoTrans,
-                    CoreBlasForward, CoreBlasRowwise,
-                    mi, ib, mi, ni, sb, l,
-                    &A1[lda1*ii+ii+sb], lda1,
-                    &A2[ii+sb], lda2,
-                    &A2[ii], lda2,
-                    &T[ldt*ii], ldt,
-                    work, m);
-            #else
+
                 coreblas_zparfb(
                     CoreBlasRight, CoreBlasNoTrans,
                     CoreBlasForward, CoreBlasRowwise,
@@ -304,7 +294,7 @@ int coreblas_zttlqt(int m, int n, int ib,
                     &A2[ii], lda2,
                     &T[ldt*ii], ldt,
                     work, m);
-            #endif
+
 
         }
     }

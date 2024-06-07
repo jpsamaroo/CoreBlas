@@ -237,16 +237,7 @@ int coreblas_ztsmlq(coreblas_enum_t side, coreblas_enum_t trans,
             ni = n1 - i;
             jc = i;
         }
-#ifdef COREBLAS_USE_64BIT_BLAS
-        // Apply H or H^H.
-        coreblas_zparfb64_(side, trans, CoreBlasForward, CoreBlasRowwise,
-                    mi, ni, m2, n2, kb, 0,
-                    &A1[lda1*jc+ic], lda1,
-                    A2, lda2,
-                    &V[i], ldv,
-                    &T[ldt*i], ldt,
-                    work, ldwork);
-#else
+
         // Apply H or H^H.
         coreblas_zparfb(side, trans, CoreBlasForward, CoreBlasRowwise,
                     mi, ni, m2, n2, kb, 0,
@@ -255,7 +246,6 @@ int coreblas_ztsmlq(coreblas_enum_t side, coreblas_enum_t trans,
                     &V[i], ldv,
                     &T[ldt*i], ldt,
                     work, ldwork);
-#endif
 
     }
 
