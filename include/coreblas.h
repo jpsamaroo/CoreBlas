@@ -17,8 +17,8 @@
 extern "C" {
 #endif
 
-#ifdef COREBLAS_USE_64BIT_BLAS
-typedef int64_t blasint;
+#ifdef OPENBLAS_USE64BITINT
+typedef BLASLONG blasint;
 #else
 typedef int blasint;
 #endif
