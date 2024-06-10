@@ -151,7 +151,7 @@ int coreblas_zgeqrt(int m, int n, int ib,
 
         #ifdef COREBLAS_USE_64BIT_BLAS
             printf("[i:%d] Calling zlarft64\n", i);
-            LAPACKE_zlarft_work64(LAPACK_COL_MAJOR,
+            LAPACKE_zlarft_work64_(LAPACK_COL_MAJOR,
                        lapack_const(CoreBlasForward),
                        lapack_const(CoreBlasColumnwise),
                        m-i, sb,
